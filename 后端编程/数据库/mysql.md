@@ -43,5 +43,59 @@ show create {procedure} 'sp_name';       // 查看创建语句
 select information_schema.routines where routine_name 'sp_name';    // 查看更详细的过程信息
 ```
 
+## `DECLARE`和`SET`两种定义变量的方式
+
+这两种都是可以在复合语句中定义变量的指令，`DECLARE`相比于`SET`指令可以类似于java中的局部变量和全局变量。SET定义的变量也称作为会话变量。所以DECLARE声明的变量相当于只是在BEGIN/END块中定义了而已，而SET定义的变量就可以在任何地方使用。
+
+1. `DECLARE`
+```
+CREATE PROCEDURE p11 () 
+BEGIN 
+    DECLARE x1 CHAR(5) DEFAULT 'outer'; 
+    BEGIN 
+        DECLARE x1 CHAR(5) DEFAULT 'inner'; 
+        SELECT x1; 
+    END; 
+    SELECT x1; 
+END 
+```
+上面的这段过程是合法的。嵌套的BEGIN/END中的*x1*变量在执行到END语句时,就会消失。那么就不会作用到外部的作用域。如果需要保留内部*x1*的值的时候可以将其值保存到会话变量。   
+在定义变量的时候可以使用`DEFAULT`子句给变量初始化值，若不初始化值则默认为null；也可以使用`SET`子句来进行赋值。
+
+2. `SET`
+```
+CREATE PROCEDURE temp()
+BEGIN
+  DECLARE a INT DEFAULT 1;
+ 
+  SET a=a+1;
+  SET @b=@b+1;
+  SELECT a,@b;
+ 
+END
+```
+执行`SET @b=1; `初始化，再调用存储过程`call temp();`当多次调用存储过程时，我们会发现变量a的值不会改变，而变量@b的值会一直增加，这正好验证了SET定义的是全局变量，DECLARE定义的是局部变量。
+
+## 预处理语句（`PREPARE...FROM...`、`EXECUTE...`、`DEALLOCATE PREPARE ...`）
+```
+CREATE DEFINER=`mysql`@`%` PROCEDURE `customer_test1`(in v_name LONGTEXT)
+BEGIN
+    ## 定义变量
+	SET @TEMP = "SELECT * FROM customer WHERE 1=1";
+	## 拼接参数
+	IF v_name is not null THEN 
+		SET @TEMP = CONCAT(@TEMP, " AND `name` = '", v_name, "'");
+	END IF;
+	## 预处理
+	PREPARE SIMT FROM @TEMP;
+    ## 执行
+	EXECUTE SIMT;
+	## 清理预处理的声明
+	DEALLOCATE PREPARE SIMT;
+END
+```
+上面的这段例子就可以很直观的说明这几个指令的用法。其中值得注意的是，`prepare ... from...`的from后面跟的变量必须使用`set`来进行声明，而不能使用`declare`来进行声明。因为`prepare`、`execute`语句相当于在另外的栈帧中执行，不是在同一栈帧中执行，所以必须得使用全局变量来进行声明。
+
+
 
 
