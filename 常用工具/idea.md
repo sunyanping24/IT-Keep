@@ -34,6 +34,8 @@ Ctrl+F4		//关闭当前tab
 Alt+F8		//查看变量的值
 Alt+7		//显示类中所有的方法和属性
 Ctrl+F12    // 展示当前类中所有方法
+Ctrl+K      // 弹出git commit代码时需要填写message的界面
+Ctrl+Alt+K      // git commit and push
 ```
 
 

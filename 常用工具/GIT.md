@@ -119,11 +119,14 @@ git stash apply // 恢复最新的进度到工作区(不会删除stash list)
                 //git stash apply 的相关操作和git stash pop的相关操作是类似的，唯一的区别就是git stash pop时会将stash list删除
 ```
 
-# git版本
+# git版本处理
 
 ```
 git reset HEAD <filename>   // 从暂存区移除文件
+git reset --hard HEAD~1     // GIT版本回退，~后的数字代表向后回退几个版本
+git reset --hard HEAD <commitID>    // git版本回退都指定的版本
 
+上述几种回退方式，处理完成之后直接使用`git push -f`来进行远程仓库的版本回退。这样历史commit记录也同样会消失
 ```
 
 # git配置
