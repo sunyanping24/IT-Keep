@@ -78,6 +78,8 @@ git push -u origin/remote_branch	//远程已有分支，但未和本地分支有
 git push origin local_branch:remote_branch	//远程没有此分支，将本地分支新增为远程分支
 git fetch -p    // 保持本地仓库和远程仓库同步（会将本地仓库对应的远程仓库没有的分支删除）
 git push origin :refs/heads/<branchName>	// 当分支和标签名称相同时删除分支的
+git reset --hard <anotherBranch>   // 强制将本地另一个分支覆盖到本地当前分支
+git push origin <localBranch>:<remoteBranch> -f     // 强制将本地分支代码覆盖到远程指定分支
 ```
 
 # 标签常用操作
