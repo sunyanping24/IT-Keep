@@ -15,3 +15,10 @@ test范围依赖 在一般的编译和运行时都不需要，它们只有在测
 5. `system`（系统范围）  
 system范围依赖与provided 类似，但是你必须显式的提供一个对于本地系统中JAR 文件的路径。这么做是为了允许基于本地对象编译，而这些对象是系统类库的一部分。这样的构件应该是一直可用的，Maven 也不会在仓库中去寻找它。如果你将一个依赖范围设置成系统范围，你必须同时提供一个 systemPath 元素。注意该范围是不推荐使用的（你应该一直尽量去从公共或定制的 Maven 仓库中引用依赖）。
 
+
+# maven插件
+
+1. `maven-jar-plugin`: 将工程打成jar, 包含的是`src/main/java`、`src/test/java`的java文件
+2. `maven-resource-plugin`: 可以将`src/main/java`、`src/main/resource`包含的资源文件打入jar包，也可以指定到其他目录输出
+3. `maven-dependency-plugin`：可以将外部依赖打包，可以将依赖中的部分抽取打包等
+4. `maven-assembly-plugin`: 可以将文件指定输出到指定目录，也可以给文件赋权限等
