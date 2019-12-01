@@ -15,3 +15,21 @@
 - `-X, --request`: 指定请求方式
 - FTP下载：`curl -O ftp://ftp1:123456@172.16.1.195:21/tmpdata/tmp.data`或者`curl -O -u ftp1:123456 ftp://172.16.1.195:21/tmpdata/tmp.data`
 - `-T, --upload-file`: FTP文件上传，`curl -T tmp_client.data ftp://ftp1:123456@172.16.1.195:21/tmpdata/`或者`curl -T tmp_client.data -u ftp1:123456 ftp://172.16.1.195:21/tmpdata/`
+
+# vi
+- 命令模式
+```
+yyp   // 复制当前行到下一行
+dd    // 删除当前行
+shift+g   // 跳到文本的最后一行
+gg    // 跳到文本的第一行
+dG    // 使用gg先跳到文本的第一行，再使用dG，可以清除文本的内容
+```
+- 输入模式（使用`i`进入）
+```
+```
+
+- 底线命令模式（使用`:`进入）
+```
+:%s/<str>//gn   // 匹配整个文件中的str字符串，显示匹配到多少个，可以用来查看统计
+```
