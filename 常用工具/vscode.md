@@ -19,8 +19,14 @@
     "editor.lineHeight": 25,
     "editor.rulers": [100],
     "editor.tabSize": 2,
-    "prettier.semi": false,  // 格式化代码时，js代码中行结束不使用分号
-    "prettier.singleQuote": true, // 格式化代码时，js代码中使用单引号
+    <!-- "prettier.semi": false,  // 格式化代码时，js代码中行结束不使用分号
+    "prettier.singleQuote": true, // 格式化代码时，js代码中使用单引号 -->
+    "vetur.format.defaultFormatterOptions": {  //安装vetur插件，格式化代码时使用vetur，解决格式化时js代码中的单引号变双引号问题、自动添加分号问题
+        "prettier": {
+            "singleQuote": true,
+            "semi": false,
+        }
+    },
 }
 ```
 
