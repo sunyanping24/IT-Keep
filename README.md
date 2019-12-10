@@ -8,7 +8,7 @@
 - [数据库](#数据库)
 
 ## 常用工具
-*  [GIT](常用工具\GIT.md)
+*  [GIT](常用工具/GIT.md)
 *  [idea](常用工具\idea.md)
 *  [vscode](常用工具\vscode.md)
 *  [linux常用命令](常用工具\linux常用命令.md)
