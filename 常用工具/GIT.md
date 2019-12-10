@@ -1,3 +1,19 @@
+<!-- TOC -->
+
+- [提交/更新代码常用命令](#提交更新代码常用命令)
+- [合并代码](#合并代码)
+  - [1、git merge](#1git-merge)
+  - [2、git checkout](#2git-checkout)
+- [分支常用操作](#分支常用操作)
+- [标签常用操作](#标签常用操作)
+- [git stash](#git-stash)
+- [git版本处理](#git版本处理)
+- [git配置](#git配置)
+- [git常用操作](#git常用操作)
+- [gitignore使用常用](#gitignore使用常用)
+
+<!-- /TOC -->
+
 [点此可查看阮一峰作者整理的常用命令](http://www.ruanyifeng.com/blog/2015/12/git-cheat-sheet.html)
 
 # 提交/更新代码常用命令

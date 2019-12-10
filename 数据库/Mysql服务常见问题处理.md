@@ -1,3 +1,16 @@
+<!-- TOC -->
+
+- [Too many connections](#too-many-connections)
+- [Error related to only_full_group_by when executing a query in MySql](#error-related-to-only_full_group_by-when-executing-a-query-in-mysql)
+- [mysql多端口实现多实例，使用mysqld_multi管理](#mysql多端口实现多实例使用mysqld_multi管理)
+- [清理掉information_schema.processlist表中的连接信息](#清理掉information_schemaprocesslist表中的连接信息)
+- [mysql数据库中尝试使用枚举类](#mysql数据库中尝试使用枚举类)
+- [问题`max_allowed_packet`](#问题max_allowed_packet)
+- [Mysql服务忘记密码](#mysql服务忘记密码)
+- [数据库大小写敏感问题](#数据库大小写敏感问题)
+
+<!-- /TOC -->
+
 # Too many connections
 
 **方法一**：修改`my.cnf`文件

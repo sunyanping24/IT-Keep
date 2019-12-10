@@ -27,6 +27,7 @@
             "semi": false,
         }
     },
+    "files.eol": "\n",        // 行尾的换行符，当时为了解决markdown toc插件生成的目录中是auto的问题
 }
 ```
 
@@ -40,3 +41,4 @@
 - `Material Icon Theme`
 - `Vuter`
 - `vscode-icons`
+- `Markdown TOC`
