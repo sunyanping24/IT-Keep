@@ -25,6 +25,13 @@
 - FTP下载：`curl -O ftp://ftp1:123456@172.16.1.195:21/tmpdata/tmp.data`或者`curl -O -u ftp1:123456 ftp://172.16.1.195:21/tmpdata/tmp.data`
 - `-T, --upload-file`: FTP文件上传，`curl -T tmp_client.data ftp://ftp1:123456@172.16.1.195:21/tmpdata/`或者`curl -T tmp_client.data -u ftp1:123456 ftp://172.16.1.195:21/tmpdata/`
 
+*example*
+```
+# POST请求注意参数是json需要放在body传递时必须设置Header(Content-Type: application/json)
+curl -X POST http://localhost/ -H POST -H 'Content-Type: application/json' -d '{"name": "张三", "age": 10}'  
+curl -X POST http://localhost -d 'name=张三&age=10'
+```
+
 # vi
 - 命令模式
 ```
