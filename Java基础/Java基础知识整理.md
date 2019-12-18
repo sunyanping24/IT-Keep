@@ -1,6 +1,7 @@
 <!-- TOC -->
 
 - [try...catch...finally](#trycatchfinally)
+- [String的不可变性](#string的不可变性)
 
 <!-- /TOC -->
 
@@ -42,3 +43,51 @@ try {
 - 程序先执行try的代码，若遇到异常，则执行catch代码块，再执行finally块；若无异常，则直接执行finally代码块。
 - finally中的return、throw会覆盖掉前面的return和throw。
 - 除非遇到退出程序的代码，否则finally都是会执行的。
+
+# String的不可变性
+
+先看String类中的源码：  
+```
+public final class String
+    implements java.io.Serializable, Comparable<String>, CharSequence {
+    /** The value is used for character storage. */
+    private final char value[];
+
+    /** Cache the hash code for the string */
+    private int hash; // Default to 0
+    ....
+}
+```
+1. String类是由`final`修饰的class，它不可被扩展
+2. String的值实际是由`final`修饰的`char[]`，并且String类并没有提供修改的方法  
+
+综上以上两除源码的实现，String类不可变。
+
+```
+String str1 = "hello";
+String str2 = "hello";
+String str3 = new String("hello");
+
+String str4 = "str";
+String str5 = "str";
+String str6 = str4 + str5;  // 存放在堆内存
+String str7 = "strstr";
+String str8 = "str" + "str";    //存放在常量池
+
+
+System.out.println(str1 == str2);   // true
+System.out.println(str1.equals(str2)); // true
+System.out.println(str1 == str3);   // false
+System.out.println(str1.equals(str3));  // true
+// 变量字符串拼接 先开辟内存空间
+// 常量字符串拼接 先拼接，再开辟内存空间
+System.out.println(str6 == str7);   // false
+System.out.println(str6 == str8);   // false
+System.out.println(str7 == str8);   // true
+```
+**变量字符串的拼接，实际是使用`new StringBuilder`来进行拼接的**
+
+String不可变的好处：
+1. 不存在线程安全的问题
+2. 可以设计String常量池，减少内存占用，性能高
+3. String的hash值只需要被计算一次，比如使用String常量做Map的Key时hash值不需要被重复计算
