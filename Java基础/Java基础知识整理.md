@@ -2,6 +2,7 @@
 
 - [try...catch...finally](#trycatchfinally)
 - [String的不可变性](#string的不可变性)
+- [除了String有常量池，其它8种基本类型的对象池](#除了string有常量池其它8种基本类型的对象池)
 
 <!-- /TOC -->
 
@@ -91,3 +92,34 @@ String不可变的好处：
 1. 不存在线程安全的问题
 2. 可以设计String常量池，减少内存占用，性能高
 3. String的hash值只需要被计算一次，比如使用String常量做Map的Key时hash值不需要被重复计算
+
+# 除了String有常量池，其它8种基本类型的对象池
+以下几种创建Integer对象的方式有什么区别：
+```
+Integer i = 1;    // 自动装箱
+Integer i = Integer.valueOf(1);   // 装箱
+Integer i = new Integer(1);  
+```
+`Integer i = Integer.valueOf(1)`和`Integer i = 1`这两者是一样的，都是装箱操作，后面的写法只是简写的方式，实际上和前面的是一样的。
+主要说`Integer i = Integer.valueOf(1)`和`Integer i = new Integer(1)`的区别：  
+
+`Integer.valueOf()`的源码实现：
+```
+public static Integer valueOf(int i) {
+    if (i >= IntegerCache.low && i <= IntegerCache.high)
+        return IntegerCache.cache[i + (-IntegerCache.low)];
+    return new Integer(i);
+}
+
+  private static class IntegerCache {
+      static final int low = -128;
+      static final int high;
+      static final Integer cache[];
+      ......
+  }
+```
+**总结**：
+- 其中Integer有个内部类`IntegerCache`用来缓存Integer对象，当Integer.valueOf(1)创建的Integer对象再缓存中已经存在，则是从缓存中直接拿的,不需要创建新的对象。
+- `new Integer()`始终是创建一个新的对象
+
+*其他几种基本类型也是使用相同的实现方法*
