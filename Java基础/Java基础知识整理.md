@@ -3,6 +3,7 @@
 - [try...catch...finally](#trycatchfinally)
 - [String的不可变性](#string的不可变性)
 - [除了String有常量池，其它8种基本类型的对象池](#除了string有常量池其它8种基本类型的对象池)
+- [synchronized关键字](#synchronized关键字)
 
 <!-- /TOC -->
 
@@ -123,3 +124,113 @@ public static Integer valueOf(int i) {
 - `new Integer()`始终是创建一个新的对象
 
 *其他几种基本类型也是使用相同的实现方法*
+
+# synchronized关键字  
+`synchronized`关键字可以修饰**实例方法**、**静态方法**、**代码块**。
+- 修饰实例方法： 执行时需要获得实例方法对象锁
+- 修饰静态方法：执行时需要获得类对象锁。（修饰静态方法相当于是修饰类，不论new了多少实例，该方法只有一份）
+- 修饰代码块：执行时需要获得实例代码块的对象锁。当修饰代码块时，使用的`synchronized(Clazz)`也相当于修饰类。
+```
+public class Demo1 {
+    /**
+     * 修饰类
+     */
+    public static synchronized void test1() {
+        System.out.println(Thread.currentThread().getId() + " Demo1 test1()");
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 修饰方法
+     */
+    public synchronized void test2() {
+        System.out.println(Thread.currentThread().getId() + " Demo1 test2()");
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+    
+
+    public void test3() {
+        // 修饰方法
+        synchronized (this) {
+            System.out.println(Thread.currentThread().getId() + " Demo1 test2()");
+            try {
+                Thread.sleep(5000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+
+    }
+
+    public void test4() {
+        // 修饰类
+        synchronized (Demo1.class) {
+            System.out.println(Thread.currentThread().getId() + " Demo1 test2()");
+            try {
+                Thread.sleep(5000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+}
+```
+```
+Demo1 demo1 = new Demo1();
+new Thread(() -> {
+    demo1.test1();
+}).start();
+
+new Thread(() -> {
+    demo1.test1();
+}).start();
+```
+间隔5s调用
+
+```
+Demo1 demo1 = new Demo1();
+Demo1 demo11 = new Demo1();
+new Thread(() -> {
+    demo1.test1();
+}).start();
+
+new Thread(() -> {
+    demo11.test1();
+}).start();
+```
+间隔5s调用
+
+```
+Demo1 demo1 = new Demo1();
+Demo1 demo11 = new Demo1();
+new Thread(() -> {
+    demo1.test2();
+}).start();
+
+new Thread(() -> {
+    demo11.test2();
+}).start();
+```
+不间隔，两次都可以直接调用
+
+```
+Demo1 demo1 = new Demo1();
+new Thread(() -> {
+    demo1.test2();
+}).start();
+
+new Thread(() -> {
+    demo1.test2();
+}).start();
+```
+间隔5s调用
+
+以上test3()同test2()，test4()同test1()，区别的地方在于一个同步执行的内容是整个方法内容，一个是方法中的代码块。
