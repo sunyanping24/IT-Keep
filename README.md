@@ -9,7 +9,7 @@
 *  [GIT](Tools/GIT.md)
 *  [idea](Tools/idea.md)
 *  [vscode](Tools/vscode.md)
-*  [linux常用命令](Tools/linux常用命令.md)
+*  [linux](Tools/linux.md)
 *  [centos](Tools/centos.md)
 *  [虚拟机及服务](Tools/虚拟机及服务.md)
 *  [windows](Tools/windows.md)

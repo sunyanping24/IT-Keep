@@ -4,6 +4,11 @@
 - [vi](#vi)
 - [grep](#grep)
 - [awk](#awk)
+- [shell脚本第一行的`#!/bin/bash`和`#!/bin/sh`](#shell脚本第一行的binbash和binsh)
+- [执行脚本的几种方式](#执行脚本的几种方式)
+- [export](#export)
+- [dirname](#dirname)
+- [EOF](#eof)
 
 <!-- /TOC -->
 
@@ -58,4 +63,60 @@ grep -E "a|b"   // 匹配a或者b，注意一定是大写E参数
 # awk
 ```
 awk '{print $1}'    // 截取第一列，注意一定是单引号
+```
+
+# shell脚本第一行的`#!/bin/bash`和`#!/bin/sh`
+在shell脚本中第一行往往有这样一行代码，这虽然是`#`开头但是它不是注释，这行代码是用来指定执行脚本文件时使用哪种解释执行器。
+在linux系统中默认使用的是`bash`解释执行器，`bash`是兼容`sh`的。在`#!/bin/sh`脚本中不允许出现任何不在POSIX标准的命令，
+比如脚本中包含一些自定义函数等，就需要使用`#!/bin/bash`。  
+
+# 执行脚本的几种方式
+- `bash xxx.sh`或者`sh xxx.sh`: 指定解释执行器执行脚本，脚本没有执行权限时，这种方式也可以执行。
+- 指定路径执行`./xxx.sh`： 脚本没有执行权限时，这种方式不能执行。
+- `source xxx.sh`或者`. xxx.sh`：会将shell中得命令加载在当前shell中进行执行，而不是在子shell进程中执行，所以当前shell中可以使用脚本中定义得变量等。
+
+# export
+- 可以设定环境变量，使得该变量不仅仅只是生效于当前得shell中
+- 该变量仅仅是指生效于当前登陆
+```
+export INSTALL_HOME=$(
+  cd $(dirname $0)
+  pwd
+)
+```
+
+# dirname
+```
+dirname $0    // $0代表输入的第一个参数，这个参数是一个文件或者目录的路径，dirname用来获取该文件或者目录的父目录
+dirname /etc/hosts    // 结果是/etc
+```
+
+# EOF
+EOF是END Of File的缩写,表示自定义终止符.既然自定义,那么EOF就不是固定的,可以随意设置别名。EOF一般会配合cat能够多行文本输出.
+
+example: 将输入输出到文件
+```
+[root@iz2ze0bcvmlsi9ddobp0bpz home]# cat <<eof > test111.txt
+> 112
+> 122
+> 122
+> eof
+[root@iz2ze0bcvmlsi9ddobp0bpz home]# cat test111.txt
+112
+122
+122
+[root@iz2ze0bcvmlsi9ddobp0bpz home]#
+```
+
+example: 将内容输出到文件
+```
+cat > /usr/local/mysql/my.cnf << EOF  //或者cat << EOF > /usr/local/mysql/my.cnf
+[client]
+port = 3306
+socket = /usr/local/mysql/var/mysql.sock
+
+[mysqld]
+port = 3306
+socket = /usr/local/mysql/var/mysql.sock
+EOF
 ```
