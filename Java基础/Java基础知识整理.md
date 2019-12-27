@@ -5,6 +5,7 @@
 - [除了String有常量池，其它8种基本类型的对象池](#除了string有常量池其它8种基本类型的对象池)
 - [synchronized关键字](#synchronized关键字)
 - [全局变量、成员变量、局部变量](#全局变量成员变量局部变量)
+- [创建对象的几种方式](#创建对象的几种方式)
 
 <!-- /TOC -->
 
@@ -242,3 +243,36 @@ new Thread(() -> {
 |全局变量|全局变量也就是全局静态变量，是存放在方法区。|当类加载的时候就被创建，在类中只有一份；会跟着类的消失而消失。 |作用于所有类，直接被类调用。 |
 |成员变量|成员变量如果没有实例化那么是存放在栈中；实例化了的对象是放在堆中，栈中存放的是指向堆中对象的引用地址。|在对象被创建时而存在，当对象被垃圾回收器回收时，也会消失。|作用于当前类，被对象调用。（除静态方法不能使用，静态方法没有隐式的this）|
 |局部变量|局部变量放在栈中，`new`关键字创建的对象存放在堆中，基本类型的引用存放在栈中，基本类型值存放在栈帧中。|当方法被调用时而存在，当方法调用结束而消失。|作用于一个局部区域，比方说在一个方法中，方法调用。|
+
+# 创建对象的几种方式
+1. 使用`new`关键字
+2. 使用`Class.forName("xxx.class")`获取到Class对象，`Class.newInstance()`创建对象
+```
+Class c = Class.forName("cn.qidd.other.Order");
+Object o = c.newInstance();
+System.out.println(o);
+```
+3. 使用`Class.forName("xxx.class")`获取到Class对象，`Class.getConstructor()`获取到构造器对象Constructor，`Constructor.newInstance()`创建对象
+```
+Class<?> aClass = Class.forName("cn.qidd.other.Order");
+Constructor<?> constructor = aClass.getConstructor(String.class, String.class);
+Object instance = constructor.newInstance("1", "交易订单");
+System.out.println(instance);
+```
+4. 使用`clone()`方法。不太常用吧，反正我好像没用过。
+```
+Order order2 = new Order();
+Object clone = order2.clone();
+System.out.println(clone);
+```
+5. 对象的序列化和反序列化
+```
+Order order3 = new Order();
+ObjectOutputStream os = new ObjectOutputStream(new FileOutputStream("order.obj"));
+os.writeObject(order3);
+// 再反序列化
+ObjectInputStream is = new ObjectInputStream(new FileInputStream("order.obj"));
+Object o1 = is.readObject();
+System.out.println(o1);
+```
+上面使用的反射有两种方式，其中使用Class对象创建的相当于使用的是对象的无参构造，Constructor创建对象可以使用无参也可以使用有参构造器。
