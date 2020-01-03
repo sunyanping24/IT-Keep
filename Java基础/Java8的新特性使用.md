@@ -7,6 +7,7 @@
 - [Lambda表达式一些应用的场景](#lambda表达式一些应用的场景)
   - [循环遍历](#循环遍历)
   - [参数的传递行为并不仅仅是传值](#参数的传递行为并不仅仅是传值)
+- [Base64的编码与解码](#base64的编码与解码)
 
 <!-- /TOC -->
 
@@ -192,6 +193,31 @@ list.forEach(e -> System.out.println(e));
 ```
 
 ## 参数的传递行为并不仅仅是传值
+在Java8之前我认为是可以理解为Java中的传递行为就是值传递的，对于形参和实参可以查看*java基础知识中的形参和实参*。但是Java8中引入了函数式编程之后，参数传递可能不仅仅是值了，还可能是一个函数。
 
+# Base64的编码与解码
+**在Java8中的`java.util`增加了`Base64`类，用来做Base64的编码与解码**  
+具体的用法如下面的代码：
+```
+final Base64.Decoder decoder = Base64.getDecoder();
+final Base64.Encoder encoder = Base64.getEncoder();
+final String text = "字串文字";
+final byte[] textByte = text.getBytes("UTF-8");
+//编码
+final String encodedText = encoder.encodeToString(textByte);
+System.out.println(encodedText);
+//解码
+System.out.println(new String(decoder.decode(encodedText), "UTF-8"));
+
+final Base64.Decoder decoder = Base64.getDecoder();
+final Base64.Encoder encoder = Base64.getEncoder();
+final String text = "字串文字";
+final byte[] textByte = text.getBytes("UTF-8");
+//编码
+final String encodedText = encoder.encodeToString(textByte);
+System.out.println(encodedText);
+//解码
+System.out.println(new String(decoder.decode(encodedText), "UTF-8"));
+```
 
 
