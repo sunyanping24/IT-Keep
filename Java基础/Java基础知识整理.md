@@ -12,6 +12,7 @@
 - [synchronized关键字](#synchronized关键字)
 - [全局变量、成员变量、局部变量](#全局变量成员变量局部变量)
 - [创建对象的几种方式](#创建对象的几种方式)
+- [String的拼接，使用`+`还是StringBuilder或者StringBuffer](#string的拼接使用还是stringbuilder或者stringbuffer)
 
 <!-- /TOC -->
 
@@ -328,3 +329,9 @@ Object o1 = is.readObject();
 System.out.println(o1);
 ```
 上面使用的反射有两种方式，其中使用Class对象创建的相当于使用的是对象的无参构造，Constructor创建对象可以使用无参也可以使用有参构造器。
+
+# String的拼接，使用`+`还是StringBuilder或者StringBuffer
+- String是线程安全的，StringBuilder是非线程安全的，StringBuffer是线程安全的。
+- 当创建一个String串时首选使用`+`来进行拼接，这样实际上编译之后会创建一个`StringBuilder`对象来进行拼接，所以和StringBuilder拼接式没什么区别的，使用`+`代码相对来说简洁，并且不需要再做一次`toString()`转换。
+- 如果是多线程的操作就使用StringBuffer。
+- 但是注意当使用for循环类似的字符串拼接的话，使用`StringBuilder`来拼接，否则`str = str + "hello"`这种需要创建一个新的对象来接收结果，所以会创建很多个对象，性能较差，而使用StringBuilder只创建一个对象。
