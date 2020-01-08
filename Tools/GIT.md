@@ -11,6 +11,8 @@
 - [git配置](#git配置)
 - [git远程库常用操作](#git远程库常用操作)
 - [gitignore使用常用](#gitignore使用常用)
+- [git使用遇到的问题](#git使用遇到的问题)
+  - [git无法pull仓库refusing to merge unrelated histories](#git无法pull仓库refusing-to-merge-unrelated-histories)
 
 <!-- /TOC -->
 
@@ -186,4 +188,8 @@ git add .   // 重新trace文件
 git commit -m 'message'
 git push origin master  // 提交
 ```
+
+# git使用遇到的问题
+## git无法pull仓库refusing to merge unrelated histories
+出现这个问题的原因是：git pull是发现本地的commit历史和远程仓库的git commit历史不一样，git自动会认为可能是本地配置仓库地址不正确，如果自己确认是没有问题的，那可以使用命令`git pull --allow-unrelated-histories`来解决这个问题。
 
