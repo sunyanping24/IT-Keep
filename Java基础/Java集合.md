@@ -1,3 +1,23 @@
+<!-- TOC -->
+
+- [说说`List`、`Set`、`Map`之间的区别](#说说listsetmap之间的区别)
+- [`ArrayList`、`LinkedList](#arraylistlinkedlist)
+  - [ArrayList](#arraylist)
+  - [LinkedList](#linkedlist)
+- [Vector](#vector)
+- [Map几个主要实现类的区别](#map几个主要实现类的区别)
+  - [HashMap](#hashmap)
+  - [Hashtable](#hashtable)
+  - [LinkedHashMap](#linkedhashmap)
+  - [TreeMap](#treemap)
+- [HashMap 和 Hashtable 的区别](#hashmap-和-hashtable-的区别)
+- [HashMap 和 HashSet区别](#hashmap-和-hashset区别)
+  - [HashSet如何检查重复](#hashset如何检查重复)
+- [Hashtable和ConcurrentHashMap的区别](#hashtable和concurrenthashmap的区别)
+  - [**补充：**  CAS机制](#补充--cas机制)
+
+<!-- /TOC -->
+
 
 ![Java集合框架图](/ASSET/Java集合框架图.png)
 
@@ -24,6 +44,19 @@
 # Vector
 Vector也是和ArrayList一样，底层使用的Object数组结构来实现的，但是Vector中操作容器内元素的方法都是加了`synchronized`关键字，来使得Vector成为线程安全的集合容器。  
 一般情况下在项目中用到这个的地方很少，至少我似乎是没有使用过这个。如果各位在多线程操作容器的情况中使用到的话，因该考虑一下它的效率是不是一个存在的问题。
+
+# Map几个主要实现类的区别
+## HashMap
+它根据键的hashCode值存储数据，大多数情况下可以直接定位到它的值，因而具有很快的访问速度，但遍历顺序却是不确定的。 HashMap最多只允许一条记录的键为null，允许多条记录的值为null。HashMap非线程安全，即任一时刻可以有多个线程同时写HashMap，可能会导致数据的不一致。如果需要满足线程安全，可以用 Collections的synchronizedMap方法使HashMap具有线程安全的能力，或者使用ConcurrentHashMap。
+
+## Hashtable
+Hashtable是遗留类，很多映射的常用功能与HashMap类似，不同的是它承自Dictionary类，并且是线程安全的，任一时间只有一个线程能写Hashtable，并发性不如ConcurrentHashMap，因为ConcurrentHashMap引入了分段锁。Hashtable不建议在新代码中使用，不需要线程安全的场合可以用HashMap替换，需要线程安全的场合可以用ConcurrentHashMap替换。
+
+## LinkedHashMap
+LinkedHashMap是HashMap的一个子类，保存了记录的插入顺序，在用Iterator遍历LinkedHashMap时，先得到的记录肯定是先插入的，也可以在构造时带参数，按照访问次序排序。
+
+## TreeMap
+TreeMap实现SortedMap接口，能够把它保存的记录根据键排序，默认是按键值的升序排序，也可以指定排序的比较器，当用Iterator遍历TreeMap时，得到的记录是排过序的。如果使用排序的映射，建议使用TreeMap。在使用TreeMap时，key必须实现Comparable接口或者在构造TreeMap传入自定义的Comparator，否则会在运行时抛出java.lang.ClassCastException类型的异常。
 
 # HashMap 和 Hashtable 的区别
 **线程是否安全：** HashMap 是非线程安全的，HashTable 是线程安全的；HashTable 内部的方法基本都经过synchronized 修饰。（如果你要保证线程安全的话就使用 ConcurrentHashMap 吧！）；
@@ -109,6 +142,34 @@ public class HashSet<E>
 
 
 参考文档（不仅限于此篇博客）： [剖析面试最常见问题之java集合框架](https://snailclimb.gitee.io/javaguide/#/docs/java/collection/Java%E9%9B%86%E5%90%88%E6%A1%86%E6%9E%B6%E5%B8%B8%E8%A7%81%E9%9D%A2%E8%AF%95%E9%A2%98?id=%e5%89%96%e6%9e%90%e9%9d%a2%e8%af%95%e6%9c%80%e5%b8%b8%e8%a7%81%e9%97%ae%e9%a2%98%e4%b9%8bjava%e9%9b%86%e5%90%88%e6%a1%86%e6%9e%b6)
+
+# Hashtable和ConcurrentHashMap的区别
+请参考这篇文章：[ConcurrentHashMap 和 Hashtable 的区别](https://snailclimb.gitee.io/javaguide/#/docs/java/collection/Java%E9%9B%86%E5%90%88%E6%A1%86%E6%9E%B6%E5%B8%B8%E8%A7%81%E9%9D%A2%E8%AF%95%E9%A2%98?id=concurrenthashmap-%e5%92%8c-hashtable-%e7%9a%84%e5%8c%ba%e5%88%ab)
+
+## **补充：**  CAS机制  
+解决并发安全问题总结来说就是两种情况：有锁和无锁  
+- **有锁：** 使用`synchronized`，这种常称为悲观锁，就是认为每次临界操作都会出现冲突，用锁来阻塞线程的执行。  
+- **无锁：** 不使用锁，这种常称为乐观锁，就是认为每次临界操作都不会出现冲突，因此所有线程都可以不用阻塞的持续执行；而一旦出现了冲突，则重试操作一直到没有冲突为止。
+
+CAS的机制就是用来在无锁的情况下检测冲突的。具体的实现原理如下：
+>CAS 操作包含三个操作数 —— 内存位置（V）、预期原值（A）和新值(B)。 如果内存位置的值与预期原值相匹配，那么处理器会自动将该位置值更新为新值 。否则，处理器不做任何操作。无论哪种情况，它都会在 CAS 指令之前返回该 位置的值。（在 CAS 的一些特殊情况下将仅返回 CAS 是否成功，而不提取当前 值。）CAS 有效地说明了“我认为位置 V 应该包含值 A；如果包含该值，则将 B 放到这个位置；否则，不要更改该位置，只告诉我这个位置现在的值即可。”  
+>
+>通常将 CAS 用于同步的方式是从地址 V 读取值 A，执行多步计算来获得新 值 B，然后使用 CAS 将 V 的值从 A 改为 B。如果 V 处的值尚未同时更改，则 CAS 操作成功。  
+>
+>类似于 CAS 的指令允许算法执行读-修改-写操作，而无需害怕其他线程同时修改变量，因为如果其他线程修改变量，那么 CAS会检测它（并失败），算法可以对该操作重新计算
+
+**CAS的问题**  
+1. **ABA问题：** 当你获得对象当前数据后，在准备修改为新值前，对象的值被其他线程连续修改了两次，而经过两次修改后，对象的值又恢复为旧值，这样当前线程无法正确判断这个对象是否修改过  
+**解决办法：** JDK1.5可以利用类AtomicStampedReference来解决这个问题，AtomicStampedReference内部不仅维护了对象值，还维护了一个时间戳。当AtomicStampedReference对应的数值被修改时，除了更新数据本身外，还必须要更新时间戳，对象值和时间戳都必须满足期望值，写入才会成功
+
+2. **循环时间长开销大。** 自旋CAS如果长时间不成功，会给CPU带来非常大的执行开销。  
+**解决办法：** JVM支持处理器提供的pause指令，使得效率会有一定的提升，pause指令有两个作用，第一它可以延迟流水线执行指令,使CPU不会消耗过多的执行资源，第二它可以避免在退出循环的时候因内存顺序冲突（memory order violation）而引起CPU流水线被清空（CPU pipeline flush），从而提高CPU的执行效率。
+
+3. **只能保证一个共享变量的原子操作。**当对一个共享变量执行操作时，我们可以使用循环CAS的方式来保证原子操作，但是对多个共享变量操作时，循环CAS就无法保证操作的原子性  
+**解决办法：** 从Java1.5开始JDK提供了AtomicReference类来保证引用对象之间的原子性，你可以把多个变量放在一个对象里来进行CAS操作。
+
+
+
 
 
 
