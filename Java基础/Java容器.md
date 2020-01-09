@@ -15,6 +15,8 @@
   - [HashSet如何检查重复](#hashset如何检查重复)
 - [Hashtable和ConcurrentHashMap的区别](#hashtable和concurrenthashmap的区别)
   - [**补充：**  CAS机制](#补充--cas机制)
+- [Stack（后进先出）（目前不建议使用）](#stack后进先出目前不建议使用)
+- [Queue(先进先出)（也不建议使用）](#queue先进先出也不建议使用)
 
 <!-- /TOC -->
 
@@ -169,6 +171,44 @@ CAS的机制就是用来在无锁的情况下检测冲突的。具体的实现�
 **解决办法：** 从Java1.5开始JDK提供了AtomicReference类来保证引用对象之间的原子性，你可以把多个变量放在一个对象里来进行CAS操作。
 
 
+# Stack（后进先出）（目前不建议使用）
+Stack继承了Vector，所以基本就知道了Stack的数据结构是什么样子的。当然它也是一个线程安全的栈。在Stack类中它实现了自己独有的几个方法，入栈和出栈的方法。
+```
+public class Stack<E> extends Vector<E> {
+ 
+    public Stack() {}
+    // 入栈
+    public E push(E item) {...}
+    // 出栈
+    public synchronized E pop() {...}
+    // 返回栈顶的元素，但是栈顶元素不会出栈
+    public synchronized E peek() {...}
+
+    public boolean empty() {...}
+
+    public synchronized int search(Object o) {...}
+}
+```
+
+# Queue(先进先出)（也不建议使用）
+Queue是个接口继承自Collection，通常常见的是ArrayQueue。Queue也有自己的方法。
+```
+public interface Queue<E> extends Collection<E> {
+    // 向队列末尾添加元素，若队列已满则发生异常
+    boolean add(E e);
+    // 向队列末尾添加元素若队列已满，返回false,若添加成功返回true
+    boolean offer(E e);
+    // 移除并返回队列头部元素，若队列已空抛出异常。
+    E remove();
+    // 移除并返回队列头部元素，若队列已空返回Null。另外，可以附加时间，时间单位参数设置超时。
+    E poll();
+    // 返回队列头部元素，若队列已空抛出异常。
+    E element();
+    // 返回队列头部元素，若队列已空返回Null。
+    E peek();
+}
+```
+需要注意的是，由于队列中poll和peek操作以Null为标志，所以队列中添加Null元素是不合法的。
 
 
 

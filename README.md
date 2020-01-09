@@ -20,7 +20,7 @@
 * [Java多线程](Java基础/Java多线程.md)
 * [Java IO](Java基础/Java%20IO.md)
 * [Java8的新特性使用](Java基础/Java8的新特性使用.md)
-* [Java集合](Java基础/Java集合.md)
+* [Java容器](Java基础/Java容器.md)
 
 ## Database
 - [MySQL](#MySQL)
