@@ -9,6 +9,12 @@
   - [`ThreadPoolExecutor`](#threadpoolexecutor)
   - [线程池都提供了`submit()`和`execute()`方法](#线程池都提供了submit和execute方法)
   - [ThreadPoolExecutor使用的阻塞队列](#threadpoolexecutor使用的阻塞队列)
+- [几种JDK提供的并发容器](#几种jdk提供的并发容器)
+  - [`ConcurrentHashMap`: 线程安全的HashMap](#concurrenthashmap-线程安全的hashmap)
+  - [`CopyOnWriteArrayList`](#copyonwritearraylist)
+  - [`ConcurrentLinkedQueue`](#concurrentlinkedqueue)
+- [`BlockingQueue`（待实战中总结）](#blockingqueue待实战中总结)
+- [`ConcurrentSkipListMap`（待实战中总结）](#concurrentskiplistmap待实战中总结)
 
 <!-- /TOC -->
 
@@ -119,3 +125,86 @@ public static final ThreadPoolExecutor executor = new ThreadPoolExecutor(
 可以参考这篇文章: [https://blog.csdn.net/xiaojin21cen/article/details/87363143](https://blog.csdn.net/xiaojin21cen/article/details/87363143)
 
 **在使用误解队列的时候一定要注意,一般情况下一定要给误解队列设置一个队列可以容纳的值,否则线程数最多只能达到corePoolSize的值**
+
+# 几种JDK提供的并发容器
+`java.util.concurrent`包下的几个类的介绍：
+## `ConcurrentHashMap`: 线程安全的HashMap
+## `CopyOnWriteArrayList`
+线程安全的List，**一般使用于读多写少**的并发环境中，若写频繁的情况下慎用，因为这个东西的底层实现原理的原因，性能可能并不如想象中的好。
+
+**使用案例中的坑**   
+在项目中曾经使用过该容器，当时需要将几万条数据读出写入到一个容器中，然后再统一处理，为了提高效率，使用的是多线程读取，然后写入，就使用了CopyOnWriteArrayList，结果由于测试不足，导致在生产上数据量突然增大的情况下，向象容器写入数据时的效率急剧下降。后来因为找不到很好的解决办法，最终取消掉了这块的多线程处理的方式。反而效率更好了。--都是因为年轻不懂事。
+
+**底层实现原理**  
+CopyOnWriteArrayList容器允许并发读，读操作是无锁的，性能较高。至于写操作，比如向容器中添加一个元素，则首先将当前容器复制一份，然后在新副本上执行写操作，结束之后再将原容器的引用指向新容器。  
+看一下几段源码
+```添加操作
+public boolean add(E e) {
+    //ReentrantLock加锁，保证线程安全
+    final ReentrantLock lock = this.lock;
+    lock.lock();
+    try {
+        Object[] elements = getArray();
+        int len = elements.length;
+        //拷贝原容器，长度为原容器长度加一
+        Object[] newElements = Arrays.copyOf(elements, len + 1);
+        //在新副本上执行添加操作
+        newElements[len] = e;
+        //将原容器引用指向新副本
+        setArray(newElements);
+        return true;
+    } finally {
+        //解锁
+        lock.unlock();
+    }
+} 
+```
+
+```删除操作
+public E remove(int index) {
+    //加锁
+    final ReentrantLock lock = this.lock;
+    lock.lock();
+    try {
+        Object[] elements = getArray();
+        int len = elements.length;
+        E oldValue = get(elements, index);
+        int numMoved = len - index - 1;
+        if (numMoved == 0)
+            //如果要删除的是列表末端数据，拷贝前len-1个数据到新副本上，再切换引用
+            setArray(Arrays.copyOf(elements, len - 1));
+        else {
+            //否则，将除要删除元素之外的其他元素拷贝到新副本中，并切换引用
+            Object[] newElements = new Object[len - 1];
+            System.arraycopy(elements, 0, newElements, 0, index);
+            System.arraycopy(elements, index + 1, newElements, index,
+                                numMoved);
+            setArray(newElements);
+        }
+        return oldValue;
+    } finally {
+        //解锁
+        lock.unlock();
+    }
+}
+```
+添加操作和删除操作基本是一个道理，都是将新的元素Copy到新的容器中，然后引用再指向新的对象。
+```
+public E get(int index) {
+    return get(getArray(), index);
+}
+```
+读数据和锁没有关系，直接读，这样的话读的效率是非常高的，就相当于和ArrayList一模一样的效率。
+
+**这种实现方式是存在一定的缺点的：**  
+- **内存占用问题：** 毕竟每次执行写操作都要将原容器拷贝一份，数据量大时，对内存压力较大，可能会引起频繁GC；
+- **无法保证实时性：** Vector对于读写操作均加锁同步，可以保证读和写的强一致性。而CopyOnWriteArrayList由于其实现策略的原因，写和读分别作用在新老不同容器上，在写操作执行过程中，读不会阻塞但读取到的却是老容器的数据。
+
+## `ConcurrentLinkedQueue`
+直接参考这篇博客，我觉得总结得非常好：[https://blog.csdn.net/u013991521/article/details/53068549](https://blog.csdn.net/u013991521/article/details/53068549)
+
+# `BlockingQueue`（待实战中总结）
+阻塞队列的一个接口，通过链表、数组等方式实现了这个接口。表示阻塞队列，非常适合用于作为数据共享的通道。通常使用的比如`ArrayBlockingQueue`、`LinkedBlockingQueue`。
+
+# `ConcurrentSkipListMap`（待实战中总结）
+跳表的实现。这是一个 Map，使用跳表的数据结构进行快速查找。
