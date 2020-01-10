@@ -13,8 +13,8 @@
   - [`ConcurrentHashMap`: 线程安全的HashMap](#concurrenthashmap-线程安全的hashmap)
   - [`CopyOnWriteArrayList`](#copyonwritearraylist)
   - [`ConcurrentLinkedQueue`](#concurrentlinkedqueue)
-- [`BlockingQueue`（待实战中总结）](#blockingqueue待实战中总结)
-- [`ConcurrentSkipListMap`（待实战中总结）](#concurrentskiplistmap待实战中总结)
+  - [`BlockingQueue`（待实战中总结）](#blockingqueue待实战中总结)
+  - [`ConcurrentSkipListMap`（待实战中总结）](#concurrentskiplistmap待实战中总结)
 
 <!-- /TOC -->
 
@@ -203,8 +203,8 @@ public E get(int index) {
 ## `ConcurrentLinkedQueue`
 直接参考这篇博客，我觉得总结得非常好：[https://blog.csdn.net/u013991521/article/details/53068549](https://blog.csdn.net/u013991521/article/details/53068549)
 
-# `BlockingQueue`（待实战中总结）
+## `BlockingQueue`（待实战中总结）
 阻塞队列的一个接口，通过链表、数组等方式实现了这个接口。表示阻塞队列，非常适合用于作为数据共享的通道。通常使用的比如`ArrayBlockingQueue`、`LinkedBlockingQueue`。
 
-# `ConcurrentSkipListMap`（待实战中总结）
+## `ConcurrentSkipListMap`（待实战中总结）
 跳表的实现。这是一个 Map，使用跳表的数据结构进行快速查找。
