@@ -1,11 +1,16 @@
 个人笔记
+<!-- TOC -->
 
-# 目录
-- [Tools](#Tools)
-- [Database](#Database)
-- [BuildTools](#BuildTools)
-- [GroceryStore](#GroceryStore)
-- [消息中间件](#Messages)
+- [Tools](#tools)
+- [Java基础](#java基础)
+- [Database](#database)
+  - [MySQL](#mysql)
+  - [Redis](#redis)
+- [消息中间件](#消息中间件)
+- [BuildTools](#buildtools)
+- [GroceryStore](#grocerystore)
+
+<!-- /TOC -->
 
 ## Tools
 *  [GIT](Tools/GIT.md)
@@ -35,7 +40,7 @@
 ### Redis
 * [Redis](Database/Redis/Redis.md)
 
-## Messages
+## 消息中间件
 * [Kafka常用操作](Messages/Kafka常用操作.md)
 * [Kafka入门整理](Messages/Kafka入门整理.md)
 
