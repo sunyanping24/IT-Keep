@@ -35,7 +35,7 @@
 ### Redis
 * [Redis](Database/Redis/Redis.md)
 
-## Message
+## Messages
 * [Kafka常用操作](Messages/Kafka常用操作.md)
 * [Kafka入门整理](Messages/Kafka入门整理.md)
 
