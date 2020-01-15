@@ -5,6 +5,8 @@
 - [Database](#Database)
 - [BuildTools](#BuildTools)
 - [GroceryStore](#GroceryStore)
+- [消息中间件](#Messages)
+
 ## Tools
 *  [GIT](Tools/GIT.md)
 *  [idea](Tools/idea.md)
@@ -33,9 +35,12 @@
 ### Redis
 * [Redis](Database/Redis/Redis.md)
 
+## Message
+* [Kafka常用操作](Messages/Kafka常用操作.md)
+* [Kafka入门整理](Messages/Kafka入门整理.md)
+
 ## BuildTools
 * [maven](BuildTools/maven.md)
 
 ## GroceryStore
 * [还没来得及归类整理](GroceryStore/还没来得及归类整理.md)
-
