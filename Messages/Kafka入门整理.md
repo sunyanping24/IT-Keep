@@ -13,6 +13,7 @@
   - [生产者（Producer）](#生产者producer)
   - [消费者（Consumer）](#消费者consumer)
   - [消息的持久化](#消息的持久化)
+  - [Kafka底层存储结构](#kafka底层存储结构)
 
 <!-- /TOC -->
 
@@ -105,3 +106,57 @@ Kafka 对消息的存储和缓存严重依赖于文件系统。人们对于“�
 2. 因为设计的Partition，commit log是append的方式，这样不仅保证了顺序性，并且还能保证磁盘的顺序写。所以使用磁盘写性能不会影响太大。
 
 对于Kafka消息的持久化为什么选择直接将数据写入文件系统的持久化日志可以参考官网中文文档的解释：[参考文章](http://kafka.apachecn.org/documentation.html#design_filesystem)
+
+## Kafka底层存储结构
+
+默认情况下，kafka将数据存储在`/tmp/kafka-logs/`的目录下，每个Topic按照Partition的数量生成多个不同的目录，如`mytopic-0`, `mytopic-1`等。
+而每个分区的数据又是分段（Segment）进行存储的，以该文件第一条数据的offset来命名。每个Segment文件的大小是可以设置的，默认是超过7天或者超过500M,
+则会将消息保存到新的Segment文件中。
+```
+|-- mytopic-0
+  |-- 00000000000000000000.index
+  |-- 00000000000000000000.log
+  |-- 00000000000000000000.timeindex
+  |-- 00000000000000015467.index
+  |-- 00000000000000015467.log
+  |-- 00000000000000015467.timeindex
+  |-- 00000000000000000050.snapshot
+  |-- leader-epoch-checkpoint
+|-- mytopic-1
+```
+
+1. `leader-epoch-checkpoint`文件:   
+  对应整个log目录
+
+2. `*.log`文件  
+    实际存储data的Segment文件，文件名是Segment的baseOffset（起始offset）。通过配置文件中的log.segment.bytes选项，
+可以定义当文件多大时roll out一个出新的Segment。
+
+3. `*.index`文件  
+    文件名是Segment的baseOffset，存储了messageRelativeOffset->filePosition的key-value list，通过配置，
+可以定义data中隔多少bytes就打一次index（bytes都是完整的记录包，所以不一定是准确的间隔），默认是4096 bytes。kafka partition中的offset都称为messageOffset, 
+而index文件中的messageRelativeOffset，则是通过 (messasgeOffset - Segment的baseOffset) 得到的，而filePosition就是message存储在log文件中的字节偏移量。
+
+4. `*.timeindex`文件   
+文件名是Segment的baseOffset，存储了每个记录包中最大的timestamp -> 每个记录包中最大的messageRelativeOffset（存储时也是减去Segment的baseOffset）的key-value list。
+
+5. `*.snapshot`文件  
+  记录了producer的事务信息。
+
+以以上的存储举例。`00.log`存储的消息是`0~15466`,`15467.log`存储的消息是`15467~下一个`。
+
+**Partition中的每条Message由offset来表示它在这个partition中的偏移量，这个offset不是该Message在partition数据文件中的实际存储位置，而是逻辑上一个值，它唯一确定了partition中的一条Message。因此，可以认为offset是partition中Message的id。partition中的每条Message包含了以下三个属性：offset / MessageSize / data。**
+
+![Kafka底层存储结构0](/ASSET/Kafka底层存储结构0.png)
+
+index和log的关系及内部数据信息：
+![Kafka底层存储结构](/ASSET/Kafka底层存储结构.png)
+
+**index、log这些文件总是成对存在的，index文件作为log数据查找的索引文件，来提高查询数据的效率。index文件中的每条数据有2个值, offset:0（消息偏移量/ID） position: 0（对应消息存储的物理位置），但是offset的值并不是连续的，这是因为 Kafka 采取稀疏索引存储的方式，每隔一定字节的数据建立一条索引，它减少了索引文件大小，使得能够把 index 映射到内存，降低了查询时的磁盘 IO 开销，同时也并没有给查询带来太多的时间消耗。**
+
+**log文件中offset的值是顺序加1的，position的值也不是顺序加1的。这是因为position的位置是根据消息的字节大小，计算出在磁盘的位置。根据这种规律，可以知道，虽然position不是顺序加1，但是position的值始终是随着offset增大而增大**
+
+获取消息过程举例：比如，按照上图中的数据，需要查找offset为7的消息  
+1. 使用二分法查找到从哪个个LogSegment中查找
+2. 打开该段中的index文件，找到小于或者等于7的offset的数据，那就找到`<4，476>`这条数据，然后使用476找到log中位置是476的消息，并对比offset是否为7，不是的话就顺序向后找，直到找到offset是7的消息。
+
