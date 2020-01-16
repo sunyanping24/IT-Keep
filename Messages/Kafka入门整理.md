@@ -15,6 +15,7 @@
   - [消息的持久化](#消息的持久化)
   - [Kafka底层存储结构](#kafka底层存储结构)
 - [Zookeeper 在 Kafka 中的作用](#zookeeper-在-kafka-中的作用)
+- [reblance机制](#reblance机制)
 
 <!-- /TOC -->
 
@@ -215,3 +216,7 @@ Kafka中每个Topic都会以/brokers/topics/[topic]的形式被记录，如/brok
 **对Broker服务器变化注册监听。** 消费者需要对/broker/ids/[0-N]中的节点进行监听，如果发现Broker服务器列表发生变化，那么就根据具体情况来决定是否需要进行消费者负载均衡。
 
 **进行消费者负载均衡。** 为了让同一个Topic下不同分区的消息尽量均衡地被多个 消费者 消费而进行 消费者 与 消息 分区分配的过程，通常，对于一个消费者分组，如果组内的消费者服务器发生变更或Broker服务器发生变更，会发出消费者负载均衡。
+
+# reblance机制
+
+参考这篇文章，作者也是将的非常的详细：[https://www.cnblogs.com/yoke/p/11405397.html](https://www.cnblogs.com/yoke/p/11405397.html)
