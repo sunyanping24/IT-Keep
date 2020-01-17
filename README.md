@@ -43,6 +43,7 @@
 ## 消息中间件
 * [Kafka常用操作](Messages/Kafka常用操作.md)
 * [Kafka入门整理](Messages/Kafka入门整理.md)
+* [RabbitMQ入门整理](Messages/RabbitMQ入门整理.md)
 
 ## BuildTools
 * [maven](BuildTools/maven.md)
