@@ -1,14 +1,15 @@
-个人笔记
+# 个人笔记
 <!-- TOC -->
 
-- [Tools](#tools)
-- [Java基础](#java基础)
-- [Database](#database)
-  - [MySQL](#mysql)
-  - [Redis](#redis)
-- [消息中间件](#消息中间件)
-- [BuildTools](#buildtools)
-- [GroceryStore](#grocerystore)
+- [个人笔记](#个人笔记)
+  - [Tools](#tools)
+  - [Java基础](#java基础)
+  - [Database](#database)
+    - [MySQL](#mysql)
+    - [Redis](#redis)
+  - [消息中间件](#消息中间件)
+  - [BuildTools](#buildtools)
+  - [GroceryStore](#grocerystore)
 
 <!-- /TOC -->
 
