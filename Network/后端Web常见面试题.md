@@ -18,6 +18,7 @@
   - [TCP长连接](#tcp长连接)
   - [长连接和短连接的优缺点](#长连接和短连接的优缺点)
   - [什么时候选择使用长连接，什么时候选择使用短连接](#什么时候选择使用长连接什么时候选择使用短连接)
+- [HTTP和HTTPS的主要区别](#http和https的主要区别)
 
 <!-- /TOC -->
 
@@ -239,6 +240,14 @@ TCP的保活功能主要为服务器应用提供。如果客户端已经消失�
 
  可以参考一篇解释的比较通俗的文章：[https://www.jianshu.com/p/3fc3646fad80](https://www.jianshu.com/p/3fc3646fad80)
 
+# HTTP和HTTPS的主要区别
 
+HTTPS相对于HTTP来说，主要要解决的问题是：在HTTP的基础上，设计出更加安全的HTTP通道。即HTTPS是HTTP的安全版。
 
+Http：超文本传输协议（Http，HyperText Transfer Protocol)是互联网上应用最为广泛的一种网络协议。设计Http最初的目的是为了提供一种发布和接收HTML页面的方法。它可以使浏览器更加高效。Http协议是以明文方式发送信息的，如果黑客截取了Web浏览器和服务器之间的传输报文，就可以直接获得其中的信息。
+
+Https：是以安全为目标的Http通道，是Http的安全版。Https的安全基础是SSL。SSL协议位于TCP/IP协议与各种应用层协议之间，为数据通讯提供安全支持。SSL协议可分为两层：SSL记录协议（SSL Record Protocol），它建立在可靠的传输协议（如TCP）之上，为高层协议提供数据封装、压缩、加密等基本功能的支持。SSL握手协议（SSL Handshake Protocol），它建立在SSL记录协议之上，用于在实际的数据传输开始前，通讯双方进行身份认证、协商加密算法、交换加密密钥等。
+
+*这两者具体的设计目标、设计原理、优缺点及工作原理等不同点可以到网上搜。*
+当然这篇入门文章也讲得比较详细：[https://blog.csdn.net/qq_38289815/article/details/80969419](https://blog.csdn.net/qq_38289815/article/details/80969419)
 
