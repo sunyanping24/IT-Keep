@@ -177,3 +177,8 @@ URL的格式一般由下列三部分组成：
 **这些全都是URI, 其中有些是URL。哪些? 就是那些提供了访问机制的。**
 
 **总结： URI可以分为URL,URN或同时具备locators 和names特性的一个东西。URN作用就好像一个人的名字，URL就像一个人的地址。换句话说：URN确定了东西的身份，URL提供了找到它的方式。**
+
+参考文章：  
+- [https://blog.csdn.net/readiay/article/details/52862379](https://blog.csdn.net/readiay/article/details/52862379)
+- [https://www.cnblogs.com/gaojing/archive/2012/02/04/2413626.html](https://www.cnblogs.com/gaojing/archive/2012/02/04/2413626.html)
+- [https://www.php.cn/div-tutorial-413616.html](https://www.php.cn/div-tutorial-413616.html)
