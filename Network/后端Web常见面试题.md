@@ -12,6 +12,7 @@
   - [`Cookie`](#cookie)
   - [`Session`](#session)
   - [`Cookie` 和 `Session`的区别](#cookie-和-session的区别)
+- [`URL`和`URI`有什么区别](#url和uri有什么区别)
 
 <!-- /TOC -->
 
@@ -130,3 +131,49 @@ Session 是另一种记录客户状态的机制，不同的是 Cookie 保存在�
 3. Session 会在一定时间内保存在服务器上。当访问增多，会比较占用你服务器的性能。考虑到减轻服务器性能方面，应当使用COOKIE；
 4. 单个Cookie 在客户端的限制是3K，就是说一个站点在客户端存放的COOKIE不能超过3K；
 
+# `URL`和`URI`有什么区别
+常见的提问是：`URL`和`URI`有什么区别? 但是其实说这两者的关系时也是避免不了`URN`的。
+
+先来看一下下面这张图，大致就表明了这三者之间的关系：  
+![URI、URL、URN之间的关系](/ASSET/URI、URL、URN之间的关系.jpg)
+
+- URI（Uniform Resource Identifier ）：统一资源标识符，是以某种统一的（标准化的）方式标识资源的简单字符串。   
+
+URI一般由三部分组成：
+1. 访问资源的命名机制。 
+2. 存放资源的主机名。 
+3. 资源自身的名称，由路径表示。 
+
+典型情况下，这种字符串以scheme（命名URI的名字空间的标识符——一组相关的名称）开头，语法如下：  `scheme：[// [user：password @] host [：port]] [/] path [？查询] [#片段]`  
+
+URI以scheme和冒号开头。Scheme用大写/小写字母开头，后面为空或者跟着更多的大写/小写字母、数字、加号、减号和点号。冒号把scheme与scheme-specific-part分开了，并且scheme-specific-part的语法和语义（意思）由URI的名字空间决定。如下面的例子：
+`http://www.cnn.com`，其中`http`是`scheme`，`//www.cnn.com`是 `scheme-specific-part`，并且它的scheme与scheme-specific-part被冒号分开了。
+
+URI有绝对和相对之分，绝对的URI指以scheme（后面跟着冒号）开头的URI。前面提到的`http://www.cnn.com`就是绝对的URI的一个例子，其它的例子还有`mailto:jeff@javajeff.com`、`news:comp.lang.java.help`和`xyz://whatever`。你可以把绝对的URI看作是以某种方式引用某种资源，而这种方式对标识符出现的环境没有依赖。如果使用文件系统作类比，绝对的URI类似于从根目录开始的某个文件的径。 
+
+与绝对的URI不同的，相对的URI不是以scheme（后面跟着冒号）开始的URI。 它的一个例子是`articles/articles.html`。你可以把相对的URI看作是以某种方式引用某种资源，而这种方式依赖于标识符出现的环境。如果用文件系统作类比，相对的URI类似于从当前目录开始的文件路径。
+
+- URL（Uniform Resource Locator）：统一资源定位符。通俗地说，URL是Internet上用来描述信息资源的字符串，主要用在各种WWW客户程序和服务器程序上，特别是著名的Mosaic。采用URL可以用一种统一的格式来描述各种信息资源，包括文件、服务器的地址和目录等。  
+
+URL的格式一般由下列三部分组成：
+
+1. 协议(或称为服务方式);
+2. 存有该资源所在的服务器的名称或IP地址(包括端口号);
+3. 主机资源的具体地址。
+
+- URN（Uniform Resource Name）：统一资源名称  
+
+以下是一些例子，作为解释：  
+
+- ftp://ftp.is.co.za/rfc/rfc1808.txt (also a URL because of the protocol)
+- http://www.ietf.org/rfc/rfc2396.txt (also a URL because of the protocol)
+- ldap://[2001:db8::7]/c=GB?objectClass?one (also a URL because of the protocol)
+- mailto:John.Doe@example.com (also a URL because of the protocol)
+- news:comp.infosystems.www.servers.unix (also a URL because of the protocol)
+- tel:+1-816-555-1212
+- telnet://192.0.2.16:80/ (also a URL because of the protocol)
+- urn:oasis:names:specification:docbook:dtd:xml:4.1.2
+
+**这些全都是URI, 其中有些是URL。哪些? 就是那些提供了访问机制的。**
+
+**总结： URI可以分为URL,URN或同时具备locators 和names特性的一个东西。URN作用就好像一个人的名字，URL就像一个人的地址。换句话说：URN确定了东西的身份，URL提供了找到它的方式。**
