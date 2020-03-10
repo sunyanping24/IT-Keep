@@ -165,6 +165,7 @@ git config [--system|--global|--local] -l   // 查看git的系统级别/用户�
 ```
 git remote -v   // 查看对应项目的远程克隆地址
 git remote set-url origin [url]     // 更换git对应项目的远程克隆地址
+git remote rm <remote-origin-name>    // 删除本地仓库的远程源(连接)，比如删除origin，git remote rm origin
 ```
 
 
