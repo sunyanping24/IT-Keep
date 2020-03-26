@@ -27,7 +27,7 @@ RabbitMQ是实现AMQP（高级消息队列协议）的消息中间件的一种�
 
 # Rabbitmq概念
 Rabbitmq作为消息队列的内部结构基本如下图：   
-![RabbitMQ内部结构](/ASSET/Rabbitmq内部结构.png)
+![RabbitMQ内部结构](/ASSET/RabbitMQ内部结构.png)
 
 1. **Message：消息**      
 消息是不具名的，它由消息头和消息体组成。消息体是不透明的，而消息头则由一系列的可选属性组成，这些属性包括routing-key（路由键）、priority（相对于其他消息的优先权）、delivery-mode（指出该消息可能需要持久性存储）等。
@@ -36,14 +36,14 @@ Rabbitmq作为消息队列的内部结构基本如下图：
 消息的生产者，也是一个向交换器发布消息的客户端应用程序。
 
 3. **Exchange： 交换器，用来接收生产者发送的消息并将这些消息路由给服务器中的队列**  
-在RabbitMQ中消息直接发送给队列这种事情永远不会发生。实际的情况是，生产者将消息发送到Exchange（交换器，下图中的X），由Exchange将消息路由到一个或多个Queue中（或者丢弃）。
+在RabbitMQ中消息直接发送给队列这种事情永远不会发生。实际的情况是，生产者将消息发送到Exchange（交换器，下图中的X），由Exchange将消息路由到一个或多个Queue中（或者丢弃）。   
 ![RabbitMQ交换机](/ASSET/RabbitMQ交换机.png)
 
 **Routing Key**    
 生产者在将消息发送给Exchange的时候，一般会指定一个routing key，来指定这个消息的路由规则，而这个routing key需要与Exchange Type及binding key联合使用才能最终生效。 在Exchange Type与binding key固定的情况下（在正常使用时一般这些内容都是固定配置好的），我们的生产者就可以在发送消息给Exchange时，通过指定routing key来决定消息流向哪里。 RabbitMQ为routing key设定的长度限制为255 bytes。
 
 4. **Binding: 绑定**      
-RabbitMQ中通过Binding将Exchange与Queue关联起来，这样RabbitMQ就知道如何正确地将消息路由到指定的Queue了。
+RabbitMQ中通过Binding将Exchange与Queue关联起来，这样RabbitMQ就知道如何正确地将消息路由到指定的Queue了。    
 ![RabbitMQ绑定](/ASSET/RabbitMQ绑定.png)
 
 在绑定（Binding）Exchange与Queue的同时，一般会指定一个binding key；消费者将消息发送给Exchange时，一般会指定一个routing key；当binding key与routing key相匹配时，消息将会被路由到对应的Queue中。 在绑定多个Queue到同一个Exchange的时候，这些Binding允许使用相同的binding key。 binding key 并不是在所有情况下都生效，它依赖于Exchange Type，比如fanout类型的Exchange就会无视binding key，而是将消息路由到所有绑定到该Exchange的Queue。
@@ -67,12 +67,14 @@ RabbitMQ中通过Binding将Exchange与Queue关联起来，这样RabbitMQ就知�
 ## direct模式
 direct类型的Exchange路由规则也很简单，它会把消息路由到那些binding key与routing key完全匹配的Queue中。
 ![RabbitMQ交换机direct类型](/ASSET/RabbitMQ交换机direct类型.png)
+
 以上图的配置为例，我们以routingKey=”error”发送消息到Exchange，则消息会路由到Queue1（amqp.gen-S9b…，这是由RabbitMQ自动生成的Queue名称）和Queue2（amqp.gen-Agl…）；如果我们以routingKey=”info”或routingKey=”warning”来发送消息，则消息只会路由到Queue2。如果我们以其他routingKey发送消息，则消息不会路由到这两个Queue中。
 
 ## fanout模式
 fanout类型的Exchange路由规则非常简单，它会把所有发送到该Exchange的消息路由到所有与它绑定的Queue中。**无论Queue使用哪种routingKey绑定到交换机上的，只要是通过该交换机分发的消息都会广播给这些queue**
 
 ![RabbitMQ交换机fanout类型](/ASSET/RabbitMQ交换机fanout类型.png)
+
 上图中，生产者（P）发送到Exchange（X）的所有消息都会路由到图中的两个Queue，并最终被两个消费者（C1与C2）消费。
 
 ## topic模式
@@ -83,6 +85,7 @@ topic类型的Exchange在匹配规则上进行了扩展，它与direct类型的E
 - binding key中可以存在两种特殊字符“*”与“#”，用于做模糊匹配，其中“*”用于匹配一个单词，“#”用于匹配多个单词（可以是零个）
 
 ![RabbitMQ交换机topic类型](/ASSET/RabbitMQ交换机topic类型.png)
+
 以上图中的配置为例，routingKey=”quick.orange.rabbit”的消息会同时路由到Q1与Q2，routingKey=”lazy.orange.fox”的消息会路由到Q1与Q2，routingKey=”lazy.brown.fox”的消息会路由到Q2，routingKey=”lazy.pink.rabbit”的消息会路由到Q2（只会投递给Q2一次，虽然这个routingKey与Q2的两个bindingKey都匹配）；routingKey=”quick.brown.fox”、routingKey=”orange”、routingKey=”quick.orange.male.rabbit”的消息将会被丢弃，因为它们没有匹配任何bindingKey。
 
 **注意：比如routingKey=topic， ` * / topic / topic.# / #.topic.#` 都可以匹配到**
