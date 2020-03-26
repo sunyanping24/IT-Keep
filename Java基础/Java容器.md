@@ -1,7 +1,7 @@
 <!-- TOC -->
 
 - [说说`List`、`Set`、`Map`之间的区别](#说说listsetmap之间的区别)
-- [`ArrayList`、`LinkedList](#arraylistlinkedlist)
+- [`ArrayList`、`LinkedList`](#arraylistlinkedlist)
   - [ArrayList](#arraylist)
   - [LinkedList](#linkedlist)
 - [Vector](#vector)
@@ -32,7 +32,7 @@
 
 *从上面的这个Java集合框架图中其实大概能够看出来，对于我们平时使用最多的那应该就是一些类，对于定义为接口的和抽象类的应该在平时开发时可能使用的比较少。这里就主要总结`ArrayList`、`LinkedList`、`Vector`、`Stack`、`HashSet`、`TreeSet`、`LinkedHashSet`、`HashMap`、`TreeMap`、`LinkedHashMap`、`Hashtable`、`WeakHashMap`等*
 
-# `ArrayList`、`LinkedList
+# `ArrayList`、`LinkedList`
 
 ## ArrayList  
 **ArrayList 类提供了快速的基于索引的成员访问方式，对尾部成员的增加和删除支持较好。** 使用 ArrayList 创建的集合，允许对集合中的元素进行快速的随机访问，不过，向 ArrayList 中插入与删除元素的速度相对较慢。
@@ -61,10 +61,10 @@ LinkedHashMap是HashMap的一个子类，保存了记录的插入顺序，在用
 TreeMap实现SortedMap接口，能够把它保存的记录根据键排序，默认是按键值的升序排序，也可以指定排序的比较器，当用Iterator遍历TreeMap时，得到的记录是排过序的。如果使用排序的映射，建议使用TreeMap。在使用TreeMap时，key必须实现Comparable接口或者在构造TreeMap传入自定义的Comparator，否则会在运行时抛出java.lang.ClassCastException类型的异常。
 
 # HashMap 和 Hashtable 的区别
-**线程是否安全：** HashMap 是非线程安全的，HashTable 是线程安全的；HashTable 内部的方法基本都经过synchronized 修饰。（如果你要保证线程安全的话就使用 ConcurrentHashMap 吧！）；
-**效率：** 因为线程安全的问题，HashMap 要比 HashTable 效率高一点。另外，HashTable 基本被淘汰，不要在代码中使用它；
-**对Null key 和Null value的支持：** HashMap 中，null 可以作为键，这样的键只有一个，可以有一个或多个键所对应的值为 null。。但是在 HashTable 中 put 进的键值只要有一个 null，直接抛出 NullPointerException。
-初始容量大小和每次扩充容量大小的不同 ： ①创建时如果不指定容量初始值，Hashtable 默认的初始大小为11，之后每次扩充，容量变为原来的2n+1。HashMap 默认的初始化大小为16。之后每次扩充，容量变为原来的2倍。②创建时如果给定了容量初始值，那么 Hashtable 会直接使用你给定的大小，而 HashMap 会将其扩充为2的幂次方大小。也就是说 HashMap 总是使用2的幂作为哈希表的大小,后面会介绍到为什么是2的幂次方。
+**线程是否安全：** HashMap 是非线程安全的，HashTable 是线程安全的；HashTable 内部的方法基本都经过synchronized 修饰。（如果你要保证线程安全的话就使用 ConcurrentHashMap 吧！）；   
+**效率：** 因为线程安全的问题，HashMap 要比 HashTable 效率高一点。另外，HashTable 基本被淘汰，不要在代码中使用它；    
+**对Null key 和Null value的支持：** HashMap 中，null 可以作为键，这样的键只有一个，可以有一个或多个键所对应的值为 null。。但是在 HashTable 中 put 进的键值只要有一个 null，直接抛出 NullPointerException。    
+初始容量大小和每次扩充容量大小的不同 ： ①创建时如果不指定容量初始值，Hashtable 默认的初始大小为11，之后每次扩充，容量变为原来的2n+1。HashMap 默认的初始化大小为16。之后每次扩充，容量变为原来的2倍。②创建时如果给定了容量初始值，那么 Hashtable 会直接使用你给定的大小，而 HashMap 会将其扩充为2的幂次方大小。也就是说 HashMap 总是使用2的幂作为哈希表的大小,后面会介绍到为什么是2的幂次方。    
 **底层数据结构：** JDK1.8 以后的 HashMap 在解决哈希冲突时有了较大的变化，当链表长度大于阈值（默认为8）时，将链表转化为红黑树，以减少搜索时间。Hashtable 没有这样的机制。
 
 # HashMap 和 HashSet区别

@@ -23,7 +23,7 @@
 2. 并发带来的内存数据安全问题 
 
 # 计算机核心数和线程数的计算关系
-![计算机核心数和线程数的计算公式](/ASSET/计算机核心数和线程数的计算公式.png)
+![计算机核心数和线程数的计算公式](/ASSET/计算机核心数和线程数的计算公式.png)    
 `w/c`中的W(等待时间)---计算时间+（IO时间+...），c---计算时间，目前我在实际应用中碰到的使用多线程处理的地方都是IO比较密集的地方，比如数据库插入数据。这中就是比较耗时的操作，w/c的值就相对来说比较大。比如保存1K条数据，计算耗时5ms，IO耗时100ms，那W/C=(5+100)/5=21。如果是1核1线程的计算机就可以设置成22，如果是4核8线程可以设置成168.
 当然这几公式里面的CPU都是按照1C1T来说的。
 
@@ -84,8 +84,9 @@ static class Thread2 extends Thread {
 - `Executors.newSingleThreadExecutor`: 创建单任务线程
 - `Executors.newCachedThreadPool`: 创建可变线程池，可根据需要创建新线程的线程池，但是在以前构造的线程可用时将重用它们。
 - `Executors.newScheduledThreadPool`: 创建延迟连接池
-- `ThreadPoolExecutor`
-**弊端**
+- `ThreadPoolExecutor`    
+
+**弊端**    
 (1)`FixedThreadPool` 和 `SingleThreadExecutor` ： 允许请求的队列长度为 `Integer.MAX_VALUE` ，可能堆积大量的请求，从而导致OOM。    
 (2)`CachedThreadPool` 和 `ScheduledThreadPool` ： 允许创建的线程数量为 `Integer.MAX_VALUE` ，可能会创建大量线程，从而导致OOM。
 
@@ -124,7 +125,7 @@ public static final ThreadPoolExecutor executor = new ThreadPoolExecutor(
 
 可以参考这篇文章: [https://blog.csdn.net/xiaojin21cen/article/details/87363143](https://blog.csdn.net/xiaojin21cen/article/details/87363143)
 
-**在使用误解队列的时候一定要注意,一般情况下一定要给误解队列设置一个队列可以容纳的值,否则线程数最多只能达到corePoolSize的值**
+**在使用无限队列的时候一定要注意,一般情况下一定要给无限队列设置一个队列可以容纳的值,否则线程数最多只能达到corePoolSize的值**
 
 # 几种JDK提供的并发容器
 `java.util.concurrent`包下的几个类的介绍：
