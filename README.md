@@ -41,7 +41,8 @@
 * [数据库连接池](Database/MySQL/数据库连接池.md)
 * [Mysql常用操作](Database/MySQL/Mysql常用的操作.md)
 * [Mysql存储过程、函数](Database/MySQL/Mysql存储过程、函数.md)
-* [一条SQL语句的执行过程](Database/MySQL/MySQL常见面试题.md)
+* [MySQL常见面试题](Database/MySQL/MySQL常见面试题.md)
+* [MySQL高性能优化规范建议](Database/MySQL/MySQL高性能优化规范建议.md)
 * [Mysql服务常见问题处理](Database/MySQL/Mysql服务常见问题处理.md)
 ### Redis
 * [Redis](Database/Redis/Redis.md)
