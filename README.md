@@ -61,7 +61,7 @@
 * [Mybatis常见面试题](Framework/Mybatis/Mybatis常见面试题.md)
 ### 分布式架构
 * [微服务架构的设计](Framework/分布式架构/微服务架构的设计.md)
-* [微服务架构的设计](Framework/分布式架构/分布式架构几大基础组件.md)
+* [分布式架构几大基础组件](Framework/分布式架构/分布式架构几大基础组件.md)
 
 ## BuildTools
 * [maven](BuildTools/maven.md)
