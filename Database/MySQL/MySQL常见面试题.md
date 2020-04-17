@@ -51,11 +51,9 @@ MySQL的体系结构可以分成3个部分：
 `union` 语句注意事项：
 - 通过`union`连接的sql两边取出的结果集列数必须一致；
 - ** 使用`union` 时，完全相等的行，将会被合并**，由于合并比较耗时，一般不直接使用 `union` 进行合并，而是通常采用`union all `进行合并；**`union all` 会保留那些重复的数据**；
-- 被 `union` 连接的sql 子句，单个子句中不用写 `order by` ，因为不会有排序的效果。但可以对最终的结果集进行排序；
-
+- 被 `union` 连接的sql 子句，单个子句中不用写 `order by` ，因为不会有排序的效果。但可以对最终的结果集进行排序；   
 **union连接会将两边数据相同的行进行合并**     
-![MySQL连接查询-全连接UNION图示](/ASSET/MySQL连接查询-全连接UNION图示.jpg)
-
+![MySQL连接查询-全连接UNION图示](/ASSET/MySQL连接查询-全连接UNION图示.jpg)    
 **union all连接不会自动合并两边相同数据行，它包含两边所有的数据行**   
 ![MySQL连接查询-全连接UNION ALL图示](/ASSET/MySQL连接查询-全连接UNION%20ALL图示.jpg)
 
