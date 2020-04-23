@@ -57,8 +57,8 @@
 ## Framework
 - [Mybatis](#Mybatis)
 - [分布式架构](#分布式架构)
-* [SpringBoot](Framework/SpringBoot.md)
-- [Spring](#Framework/Spring)
+- [SpringBoot](Framework/SpringBoot.md)
+- [Spring](#Spring)
 
 ### Mybatis
 * [Mybatis常见面试题](Framework/Mybatis/Mybatis常见面试题.md)
