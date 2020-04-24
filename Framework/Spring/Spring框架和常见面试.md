@@ -1,6 +1,6 @@
 <!-- TOC -->
 
-- [Spring框架](#spring框架)
+- [Spring框架简介](#spring框架简介)
 - [Spring的`DI`和`IOC`机制](#spring的di和ioc机制)
 - [Spring的`AOP`机制](#spring的aop机制)
 - [Spring支持的几种bean的作用域](#spring支持的几种bean的作用域)
@@ -10,10 +10,11 @@
   - [Spring事务的种类](#spring事务的种类)
   - [spring的事务传播行为](#spring的事务传播行为)
   - [Spring中的隔离级别](#spring中的隔离级别)
+- [`@Transactional` 注解在什么情况下不会生效](#transactional-注解在什么情况下不会生效)
 
 <!-- /TOC -->
 
-# Spring框架
+# Spring框架简介
 Spring框架是为了解决企业应用程序开发复杂性而创建的，框架的主要优势之一就是其分层架构，分层架构允许选择使用哪一个组件。
 
 Spring 框架是一个分层架构，由 7 个定义良好的模块组成。Spring 模块构建在核心容器之上，核心容器定义了创建、配置和管理 bean 的方式
@@ -88,6 +89,15 @@ spring事务的传播行为说的是，当多个事务同时存在的时候，sp
 - **ISOLATION_READ_COMMITTED**：读已提交，保证一个事务修改的数据提交后才能被另一事务读取，而且能看到该事务对已有记录的更新。
 - **ISOLATION_REPEATABLE_READ**：可重复读，保证一个事务修改的数据提交后才能被另一事务读取，但是不能看到该事务对已有记录的更新。
 - **ISOLATION_SERIALIZABLE**：一个事务在执行的过程中完全看不到其他事务对数据库所做的更新。
+
+# `@Transactional` 注解在什么情况下不会生效
+ `@Transactional` 注解可以作用在接口、接口方法、类、类方法上：
+ - 添加注解的方法不是`public`修饰的，则不生效。
+ - 在方法中调用同一个类中的其他方法。只有当前代理类的外部方法调用注解方法时代理才会被拦截。所以即使被调用的方法加了`@Transactional`注解事务也不会生效。
+ - 默认抛出`uncheck exception`时会生效，`check exception`不会生效。若要`check exception`生效，可以进行配置`rollbackFor=Exception.class`。
+
+当然上面这几种只是网上网友总结的比较多的几个答案。其他不生效的情况也存在，**尤其是要注意事务的转播性。**
+
 
 **Spring框架的其他参考文章：**  
   
