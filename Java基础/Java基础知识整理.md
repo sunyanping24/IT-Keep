@@ -192,6 +192,7 @@ public static Integer valueOf(int i) {
 - 修饰实例方法： 执行时需要获得实例方法对象锁
 - 修饰静态方法：执行时需要获得类对象锁。（修饰静态方法相当于是修饰类，不论new了多少实例，该方法只有一份）
 - 修饰代码块：执行时需要获得实例代码块的对象锁。当修饰代码块时，使用的`synchronized(Clazz)`也相当于修饰类。
+
 ```
 public class Demo1 {
     /**
@@ -245,6 +246,7 @@ public class Demo1 {
     }
 }
 ```
+
 ```
 Demo1 demo1 = new Demo1();
 new Thread(() -> {
@@ -335,6 +337,7 @@ ObjectInputStream is = new ObjectInputStream(new FileInputStream("order.obj"));
 Object o1 = is.readObject();
 System.out.println(o1);
 ```
+
 上面使用的反射有两种方式，其中使用Class对象创建的相当于使用的是对象的无参构造，Constructor创建对象可以使用无参也可以使用有参构造器。
 
 # String的拼接，使用`+`还是StringBuilder或者StringBuffer
