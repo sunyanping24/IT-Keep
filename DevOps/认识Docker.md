@@ -38,7 +38,7 @@ Docker 是一个构建，发布和运行应用程序的开放平台。Docker 以
 
 下图体现了 Docker 和传统虚拟化方式的不同之处：传统虚拟机技术是虚拟出一套硬件后，在其上运行一个完整操作系统，再在该系统上运行所需应用进程；而 Docker 容器内的应用进程则是直接运行于宿主的内核，容器内没有自己的内核，而且也没有进行硬件虚拟，因此要比传统虚拟机更为轻便。
 
-![容器和虚拟机的对比](/ASSET/容器和虚拟机的对比.jpg)
+![容器和虚拟机的对比](http://sunyanping.gitee.io/it-keep/ASSET/容器和虚拟机的对比.jpg)
 
 简单理解：**容器虚拟化的是操作系统而不是硬件，容器之间是共享同一套操作系统资源的。虚拟机技术是虚拟出一套硬件后，在其上运行一个完整操作系统。因此容器的隔离级别会稍低一些。**
 
@@ -51,7 +51,7 @@ Docker 是一个构建，发布和运行应用程序的开放平台。Docker 以
 
 # Docker几个核心概念
 Docker 使用 client-server 架构， Docker 客户端将命令发送给 Docker 守护进程，后者负责构建，运行和分发 Docker 容器。 Docker 客户端和守护程序使用 REST API，通过 UNIX 套接字或网络接口进行通信。核心概念如下：
-![Docker的核心概念](/ASSET/Docker的核心概念.jpg)
+![Docker的核心概念](http://sunyanping.gitee.io/it-keep/ASSET/Docker的核心概念.jpg)
 
 ## 镜像
 

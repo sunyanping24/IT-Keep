@@ -6,7 +6,7 @@
 
 # 观察者模式
 观察者模式比较常见的适用的场景：广播、通知等。例如Eureka实现的服务发现。
-![观察者模式](/ASSET/观察者模式.jpg)
+![观察者模式](http://sunyanping.gitee.io/it-keep/ASSET/观察者模式.jpg)
 Java内置了相关的接口和抽象类：`Observer`、`Observable`，在使用时直接继承/实现即可.  
 *被观察者*
 ```

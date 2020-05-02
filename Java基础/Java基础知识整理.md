@@ -91,7 +91,7 @@ try {
 
 # Java的异常处理
 ## 异常的分类
-![Java的异常处理结构](/ASSET/Java的异常处理结构.png)
+![Java的异常处理结构](http://sunyanping.gitee.io/it-keep/ASSET/Java的异常处理结构.png)
 Throwable： 有两个重要的子类：Exception（异常）和 Error（错误），二者都是 Java 异常处理的重要子类，各自都包含大量子类。异常和错误的区别是：异常能被程序本身可以处理，错误是无法处理。  
 **Error（错误）**:是程序无法处理的错误，表示运行应用程序中较严重问题。大多数错误与代码编写者执行的操作无关，而表示代码运行时 JVM（Java 虚拟机）出现的问题。例如，Java虚拟机运行错误（Virtual MachineError），当 JVM 不再有继续执行操作所需的内存资源时，将出现 OutOfMemoryError。这些异常发生时，Java虚拟机（JVM）一般会选择线程终止。这些错误表示故障发生于虚拟机自身、或者发生在虚拟机试图执行应用时，如Java虚拟机运行错误（Virtual MachineError）、类定义错误（NoClassDefFoundError）等。这些错误是不可查的，因为它们在应用程序的控制和处理能力之 外，而且绝大多数是程序运行时不允许出现的状况。对于设计合理的应用程序来说，即使确实发生了错误，本质上也不应该试图去处理它所引起的异常状况。在 Java中，错误通过Error的子类描述。   
 **Exception（异常）**:是程序本身可以处理的异常。Exception 类有一个重要的子类 RuntimeException。RuntimeException 类及其子类表示“JVM 常用操作”引发的错误。例如，若试图使用空值对象引用、除数为零或数组越界，则分别引发运行时异常（NullPointerException、ArithmeticException）和 ArrayIndexOutOfBoundException。
@@ -100,7 +100,7 @@ Exception（异常）分两大类：运行时异常和非运行时异常(编译�
 2. 非运行时异常 （编译异常）：是RuntimeException以外的异常，类型上都属于Exception类及其子类。从程序语法角度讲是必须进行处理的异常，如果不处理，程序就不能编译通过。如IOException、SQLException等以及用户自定义的Exception异常，一般情况下不自定义检查异常。
 
 通常，Java的异常（Throwable）分为可查的异常（checked exceptions）和不可查的异常（unchecked exceptions）。  
-![](/ASSET/可捕获和不可捕获异常的分类.jpg)
+![](http://sunyanping.gitee.io/it-keep/ASSET/可捕获和不可捕获异常的分类.jpg)
 1. 可查异常（编译器要求必须处置的异常）：正确的程序在运行中，很容易出现的、情理可容的异常状况。除了Exception中的RuntimeException及RuntimeException的子类以外，其他的Exception类及其子类(例如：IOException和ClassNotFoundException)都属于可查异常。这种异常的特点是Java编译器会检查它，也就是说，当程序中可能出现这类异常，要么用try-catch语句捕获它，要么用throws子句声明抛出它，否则编译不会通过。
 2. 不可查异常(编译器不要求强制处置的异常):包括运行时异常（RuntimeException与其子类）和错误（Error）。RuntimeException表示编译器不会检查程序是否对RuntimeException作了处理，在程序中不必捕获RuntimException类型的异常，也不必在方法体声明抛出RuntimeException类。RuntimeException发生的时候，表示程序中出现了编程错误，所以应该找出错误修改程序，而不是去捕获RuntimeException。
 
@@ -398,12 +398,12 @@ System.out.println(o1);
 5. 超时等待(TIMED_WAITING)：该状态不同于WAITING，它可以在指定的时间后自行返回。  
 6. 终止(TERMINATED)：表示该线程已经执行完毕。  
 
-![](/ASSET/Java的线程状态.jpg)
+![](http://sunyanping.gitee.io/it-keep/ASSET/Java的线程状态.jpg)
 
 # `volatile`关键字
 volatile关键字，用来确保将变量的更新操作通知到其他线程。当把变量声明为volatile类型后，编译器与运行时都会注意到这个变量是共享的，因此不会将该变量上的操作与其他内存操作一起重排序。volatile变量不会被缓存在寄存器或者对其他处理器不可见的地方，因此在读取volatile类型的变量时总会返回最新写入的值。  
 在访问volatile变量时不会执行加锁操作，因此也就不会使执行线程阻塞，因此volatile变量是一种比sychronized关键字更轻量级的同步机制。  
-![](/ASSET/CPU缓存.png)  
+![](http://sunyanping.gitee.io/it-keep/ASSET/CPU缓存.png)  
 当对非 volatile 变量进行读写的时候，每个线程先从内存拷贝变量到CPU缓存中。如果计算机有多个CPU，每个线程可能在不同的CPU上被处理，这意味着每个线程可以拷贝到不同的 CPU cache 中。  
 而声明变量是 volatile 的，JVM 保证了每次读变量都从内存中读，跳过 CPU cache 这一步。
 
@@ -420,6 +420,6 @@ Java虚拟机规范试图定义一种Java内存模型，以屏蔽各种硬件和
 Java内存模型的主要目标就是定义程序中各个变量的访问规则，即在虚拟机中将变量存储到内存和从内存读取变量的底层细节。这里说的变量包含实例字段、静态字段和构成数组对象的元素，不包含局部变量和方法参数，因为这2个是线程私有的并不存在线程安全的问题，也就不会有资源共享的问题。   
 
 Java内存模型设计将这些变量存到主内存，每个线程自己私有的变量存到自己的工作内存，然后线程的工作内存中保存了主内存的副本拷贝，线程对所有的变量的操作都在工作内存中完成。如果线程间的变量转递就都必须通过主内存才能完成。比如实例变量a=0，在线程A、B同时操作下，肯定是工作内存修改完成之后然后再修改主内存的值，这样如果并发执行那就产生资源竞争的问题，导致产生和预期不一致的结果。   
-![Java内存模型](/ASSET/Java内存模型.png)
+![Java内存模型](http://sunyanping.gitee.io/it-keep/ASSET/Java内存模型.png)
 
 **上述讲的`volatile`关键字声明的变量就是解决这类问题的。`volatile`声明的变量是对所有线程具有可见性的，对该变量的读取总是最新写入的值。**

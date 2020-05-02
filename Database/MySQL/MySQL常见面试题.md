@@ -12,7 +12,7 @@ MySQL的体系结构可以分成3个部分：
 - **mysql-server**：连接器（管理连接权限认证）、查询缓存（命中缓存的存起来）、分析器（语法分析）、优化器（执行计划选择、索引选择）、执行器（操作，返回结果）
 - **mysql-存储引擎**：负责存储数据，提供读写接口（建表的时候指定MyISAM，InnoDB，Memory）
 
-![MySQL逻辑架构](/ASSET/MySQL逻辑架构.jpeg)
+![MySQL逻辑架构](http://sunyanping.gitee.io/it-keep/ASSET/MySQL逻辑架构.jpeg)
 
 # 一条Mysql语句的执行过程
 `sql语句:select * from T where ID = 1`   
@@ -37,15 +37,15 @@ MySQL的体系结构可以分成3个部分：
 # MySQL几种连接查询的区别
 1. 内连接 `inner join ... on ...`
 **组合两个表中的记录，返回关联字段相符的记录，也就是返回两个表的交集（阴影）部分。**      
-![MySQL连接查询-内连接图示](/ASSET/MySQL连接查询-内连接图示.png)
+![MySQL连接查询-内连接图示](http://sunyanping.gitee.io/it-keep/ASSET/MySQL连接查询-内连接图示.png)
 
 2. 左连接 `left join ... on ...`   
 ** 左(外)连接，左表(a_table)的记录将会全部表示出来，而右表(b_table)只会显示符合搜索条件的记录。右表记录不足的地方均为NULL。**     
-![MySQL连接查询-左连接图示](/ASSET/MySQL连接查询-左连接图示.png)
+![MySQL连接查询-左连接图示](http://sunyanping.gitee.io/it-keep/ASSET/MySQL连接查询-左连接图示.png)
 
 3. 右连接 `right join ... on ...`
 **右(外)连接，左表(a_table)只会显示符合搜索条件的记录，而右表(b_table)的记录将会全部表示出来。左表记录不足的地方均为NULL。**      
-![MySQL连接查询-右连接图示](/ASSET/MySQL连接查询-右连接图示.png)
+![MySQL连接查询-右连接图示](http://sunyanping.gitee.io/it-keep/ASSET/MySQL连接查询-右连接图示.png)
 
 4. 全连接 `... union ...` 和 `... union all ...`
 `union` 语句注意事项：
@@ -53,9 +53,9 @@ MySQL的体系结构可以分成3个部分：
 - ** 使用`union` 时，完全相等的行，将会被合并**，由于合并比较耗时，一般不直接使用 `union` 进行合并，而是通常采用`union all `进行合并；**`union all` 会保留那些重复的数据**；
 - 被 `union` 连接的sql 子句，单个子句中不用写 `order by` ，因为不会有排序的效果。但可以对最终的结果集进行排序；   
 **union连接会将两边数据相同的行进行合并**     
-![MySQL连接查询-全连接UNION图示](/ASSET/MySQL连接查询-全连接UNION图示.jpg)    
+![MySQL连接查询-全连接UNION图示](http://sunyanping.gitee.io/it-keep/ASSET/MySQL连接查询-全连接UNION图示.jpg)    
 **union all连接不会自动合并两边相同数据行，它包含两边所有的数据行**   
-![MySQL连接查询-全连接UNION ALL图示](/ASSET/MySQL连接查询-全连接UNION%20ALL图示.jpg)
+![MySQL连接查询-全连接UNION ALL图示](http://sunyanping.gitee.io/it-keep/ASSET/MySQL连接查询-全连接UNION%20ALL图示.jpg)
 
 
 

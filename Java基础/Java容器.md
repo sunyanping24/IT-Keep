@@ -21,7 +21,7 @@
 <!-- /TOC -->
 
 
-![Java集合框架图](/ASSET/Java集合框架图.png)
+![Java集合框架图](http://sunyanping.gitee.io/it-keep/ASSET/Java集合框架图.png)
 
 # 说说`List`、`Set`、`Map`之间的区别
 这绝对是一道经典且常见的面试题。但是我却不是特别的感冒，把`List`和`Set`放在一起比较挺正常，毕竟都是对象容器，可是按照常理来说`Map`作为一种`key-value`存储结构的容器和他们两个来进行比较表面上看别没什么可相互比较的。还不如比较比较`Set`和`Map`的结构问题。

@@ -117,7 +117,7 @@ HTTP是一种无状态协议，即服务器不保留与客户交易时的任何�
 
 # `Cookie`和`Session`
 
-![Cookie和Session](/ASSET/Cookie和Session.png)
+![Cookie和Session](http://sunyanping.gitee.io/it-keep/ASSET/Cookie和Session.png)
 
 ## `Cookie`
 Cookie 是客户端的存储空间，由浏览器来维持。具体来说 cookie 机制采用的是在客户端保持状态的方案。
@@ -145,7 +145,7 @@ Session 是另一种记录客户状态的机制，不同的是 Cookie 保存在�
 常见的提问是：`URL`和`URI`有什么区别? 但是其实说这两者的关系时也是避免不了`URN`的。
 
 先来看一下下面这张图，大致就表明了这三者之间的关系：  
-![URI、URL、URN之间的关系](/ASSET/URI、URL、URN之间的关系.jpg)
+![URI、URL、URN之间的关系](http://sunyanping.gitee.io/it-keep/ASSET/URI、URL、URN之间的关系.jpg)
 
 - URI（Uniform Resource Identifier ）：统一资源标识符，是以某种统一的（标准化的）方式标识资源的简单字符串。   
 

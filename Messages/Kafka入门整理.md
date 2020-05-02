@@ -33,7 +33,7 @@
 为支持这些使用场景导致设计了一些独特的元素，使得 Kafka 相比传统的消息系统更像是数据库日志。
 
 # 一张图理解Kafka
-![Kafka是一个分布式流处理平台](/ASSET/一张图理解Kafka整体框架.jpg)
+![Kafka是一个分布式流处理平台](http://sunyanping.gitee.io/it-keep/ASSET/一张图理解Kafka整体框架.jpg)
 这张图是Kafka官网首页上的图，这个图基本上就将Kafka的4大核心功能和应用就描述的很清楚了。
 > Apache Kafka® 是 一个分布式流处理平台.
 
@@ -49,10 +49,10 @@
 
 ## Kafka的几个重要概念（我一开始学习Kafka是完全是懵逼状态的，这几个概念一定要搞清楚）
 **Kafka拓扑结构**   
-![Kafka的拓扑结构](/ASSET/Kafka的拓扑结构.jpg)
+![Kafka的拓扑结构](http://sunyanping.gitee.io/it-keep/ASSET/Kafka的拓扑结构.jpg)
 
 **Kafka的几个重要概念图示如下：**     
-![Kafka概念图示](/ASSET/Kafka概念图示.png)
+![Kafka概念图示](http://sunyanping.gitee.io/it-keep/ASSET/Kafka概念图示.png)
 
 ### Producer(生产者)和Consumer(消费者)
 `Producer`和`Consumer`作为Kafka的两个重要的客户端。生产者是来向Kafka的Topic中发送消息，消费者是从Kafka的Topic中订阅消息。
@@ -70,7 +70,7 @@ Kafka将消息按照主题（Topic）分类，每个主题都对应一个消息�
 
 ### 日志（commit log）和偏移量(offset)
 对于每一个topic， Kafka集群都会维持一个分区日志，如下所示：   
-![Kafka的Topic的分区日志](/ASSET/Kafka的Topic的分区日志.png)   
+![Kafka的Topic的分区日志](http://sunyanping.gitee.io/it-keep/ASSET/Kafka的Topic的分区日志.png)   
 上面的Partition讲过就是Topic的分区，每个分区会又单独的日志记录。每个分区都是有序且顺序不可变的记录集，并且不断地追加到结构化的commit log文件。分区中的每一个记录都会分配一个id号来表示顺序，我们称之为offset，offset用来唯一的标识分区中每一条记录。
 
 ### 消费组（Consumer Group）
@@ -98,7 +98,7 @@ Kafka consumer通过向 broker 发出一个“fetch”请求来获取它想要�
 当需要提高系统的吞吐时可以适当的增加Topic的Partition，同时消费组的消费者需要适当的增加，在条件允许的情况下，最佳的配置是**Partition数量=消费者组内消费者的数量**
 
 Topic的分区和消费者的关系如下图：
-![Kafka的Topic和消费者组的关系](/ASSET/Kafka的Topic和消费者组的关系.png)
+![Kafka的Topic和消费者组的关系](http://sunyanping.gitee.io/it-keep/ASSET/Kafka的Topic和消费者组的关系.png)
 
 ## 消息的持久化
 Kafka 对消息的存储和缓存严重依赖于文件系统。人们对于“磁盘速度慢”的普遍印象，使得人们对于持久化的架构能够提供强有力的性能产生怀疑。事实上，磁盘的速度比人们预期的要慢的多，也快得多，这取决于人们使用磁盘的方式。而且设计合理的磁盘结构通常可以和网络一样快。
@@ -151,10 +151,10 @@ Kafka 对消息的存储和缓存严重依赖于文件系统。人们对于“�
 
 **Partition中的每条Message由offset来表示它在这个partition中的偏移量，这个offset不是该Message在partition数据文件中的实际存储位置，而是逻辑上一个值，它唯一确定了partition中的一条Message。因此，可以认为offset是partition中Message的id。partition中的每条Message包含了以下三个属性：offset / MessageSize / data。**
 
-![Kafka底层存储结构0](/ASSET/Kafka底层存储结构0.png)
+![Kafka底层存储结构0](http://sunyanping.gitee.io/it-keep/ASSET/Kafka底层存储结构0.png)
 
 index和log的关系及内部数据信息：    
-![Kafka底层存储结构](/ASSET/Kafka底层存储结构.png)
+![Kafka底层存储结构](http://sunyanping.gitee.io/it-keep/ASSET/Kafka底层存储结构.png)
 
 **index、log这些文件总是成对存在的，index文件作为log数据查找的索引文件，来提高查询数据的效率。index文件中的每条数据有2个值, offset:0（消息偏移量/ID） position: 0（对应消息存储的物理位置），但是offset的值并不是连续的，这是因为 Kafka 采取稀疏索引存储的方式，每隔一定字节的数据建立一条索引，它减少了索引文件大小，使得能够把 index 映射到内存，降低了查询时的磁盘 IO 开销，同时也并没有给查询带来太多的时间消耗。**
 
