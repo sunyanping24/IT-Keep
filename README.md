@@ -1,7 +1,7 @@
-# 个人笔记
+# Java相关知识整理
 <!-- TOC -->
 
-- [个人笔记](#个人笔记)
+- [Java相关知识整理](#java相关知识整理)
   - [Tools](#tools)
   - [Java基础](#java基础)
   - [Database](#database)
@@ -19,6 +19,8 @@
   - [GroceryStore](#grocerystore)
 
 <!-- /TOC -->
+
+***
 
 ## Tools
 *  [GIT](Tools/GIT.md)
