@@ -9,6 +9,8 @@
 - [export](#export)
 - [dirname](#dirname)
 - [EOF](#eof)
+- [Linux文件信息查看 `ls -l`](#linux文件信息查看-ls--l)
+- [`chmod`](#chmod)
 
 <!-- /TOC -->
 
@@ -120,3 +122,26 @@ port = 3306
 socket = /usr/local/mysql/var/mysql.sock
 EOF
 ```
+
+# Linux文件信息查看 `ls -l`
+![](http://sunyanping.gitee.io/it-keep/ASSET/linux文件信息查看讲解.png)
+
+# `chmod`
+`chmod` 命令用来变更文件或目录的权限。文件或目录权限的控制分别以读取、写入、执行3种一般权限来区分。用户可以使用chmod指令去变更文件与目录的权限，设置方式采用文字或数字代号皆可。
+权限范围的表示法如下：  
+- `u`, user: 文件/目录的拥有者
+- `g`, group: 文件/目录的所属组用户
+- `o`, other: 除了u和g的其他用户
+- `a`, all: 所有的用户
+- `r`, read: 读权限，数字4代表
+- `w`, write: 写权限，数字2代表
+- `x`, 执行权限，数字1代表
+- `-`, 无权限，数字0代表
+```
+chmod 777 bar   // 给bar设置所有用户所有权限，其中权限设置时第一位代表u，第二位代表g，第三位代表o
+chmod 751 bar   // 给bar文件设置：u-所有权限，g-读和执行权限，o-执行权限
+chmod a+x   // 给所有用户执行权限
+chmod u+rwx,g+rx,o+-  // 给u所有权限，g读写权限，o-无权限
+```
+
+
