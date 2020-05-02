@@ -11,11 +11,55 @@
   <div id="app"></div>
   <script>
     window.$docsify = {
-      //...
+      // 加载侧边栏 _sidebar.md
+      // loadSidebar: true,
+      // subMaxLevel: 2,
+
+      // 文档标题，会显示在侧边栏顶部
+      name: 'Java相关知识整理',
+      // 点击文档标题后跳转的链接地址
+      // nameLink: '/',
+
+      // 入口文件，默认为README.md
+      homepage: '',
+
+      // 切换页面后是否自动跳转到页面顶部，默认false
+      auto2top: 'true',
+
+      // 小屏设备下合并导航栏到侧边栏
+      mergeNavbar: true,
+
+      // 在找不到指定页面时加载 _404.md
+      //notFoundPage: true
+
+      // search: {
+      //   maxAge: 86400000, // 过期时间，单位毫秒，默认一天
+      //   paths: 'auto',
+      //   placeholder: 'Type to search',
+      //   noData: 'No Results!',
+      //   depth: 6          // 搜索标题的最大程级, 1 - 6
+      // },
+
+      // 点击复制
+      copyCode: {
+        buttonText : 'Copy',
+        errorText  : 'Error',
+        successText: 'Copied'
+      }
     }
   </script>
   <script src="//unpkg.com/docsify/lib/docsify.min.js"></script>
   <!--Java代码高亮-->
   <script src="//unpkg.com/prismjs/components/prism-java.js"></script>
+  <!-- 每页都显示上一章、下一章 -->
+  <script src="//unpkg.com/docsify-pagination/dist/docsify-pagination.min.js"></script>
+  <!-- 显示搜索功能 -->
+  <!-- <script src="//unpkg.com/docsify/lib/plugins/search.js"></script> -->
+  <!-- 点击代码可以复制 -->
+  <script src="//unpkg.com/docsify-copy-code"></script>
+  <!-- bash语法高亮 -->
+  <script src="//unpkg.com/prismjs/components/prism-bash.js"></script>
+
+  
 </body>
 </html>
