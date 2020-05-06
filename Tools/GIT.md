@@ -190,6 +190,20 @@ git commit -m 'message'
 git push origin master  // 提交
 ```
 
+- .gitignore文件内容注意    
+1. 需要将前面忽略的目录中的某个文件不要忽略：在忽略语句前面加上`!`即可（表示不忽略）。但是需要注意，前面忽略目录需要需要写成`/bin/*`，而不能写成`/bin/`，否则不能生效。   
+```
+## 正例:
+/bin/*
+!/bin/test.sh
+
+## 反例（错例）: 这样不生效
+/bin/
+!/bin/test.sh
+```
+
+2. 目录使用 `/` 开头，`*` 通配多个字符，`?` 通配单个字符，`[]` 匹配一个字符的列表，例如 `/bin/[a,b,c]/` 匹配到的是 `/bin/a/` 、 `/bin/b/` 、 `/bin/c/`
+
 # git使用遇到的问题
 ## git无法pull仓库refusing to merge unrelated histories
 出现这个问题的原因是：git pull是发现本地的commit历史和远程仓库的git commit历史不一样，git自动会认为可能是本地配置仓库地址不正确，如果自己确认是没有问题的，那可以使用命令`git pull --allow-unrelated-histories`来解决这个问题。
