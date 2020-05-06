@@ -11,6 +11,7 @@
   - [spring的事务传播行为](#spring的事务传播行为)
   - [Spring中的隔离级别](#spring中的隔离级别)
 - [`@Transactional` 注解在什么情况下不会生效](#transactional-注解在什么情况下不会生效)
+- [`@Autowired`和`@Resource`的区别](#autowired和resource的区别)
 
 <!-- /TOC -->
 
@@ -98,6 +99,10 @@ spring事务的传播行为说的是，当多个事务同时存在的时候，sp
 
 当然上面这几种只是网上网友总结的比较多的几个答案。其他不生效的情况也存在，**尤其是要注意事务的转播性。**
 
+# `@Autowired`和`@Resource`的区别
+这两个注解都是用来注入bean的，但是两者又有区别：    
+- `@Autowired`: 由Spring框架提供，通过类型装配(byType)，默认情况下，它依赖的对象必须存在，如果允许为null，可以设置它的属性`required=false`。但是它也可以通过`@Qualifer`注解配合使用，来使用名字注入(byName)。
+- `@Resource`: 由J2EE的`javax.annotation.Resource`包来提供，但是Spring框架又是支持的。它有2个属性`name`、`type`，Spring会将`name`属性解析成Bean的名称，会将`type`属性解析成Bean的类型，所以如果使用name属性，则是使用`byName`方式注入；如果使用type属性，则是使用`byType`方式注入。若不指定，则默认使用`byName`的方式注入。
 
 **Spring框架的其他参考文章：**  
   
