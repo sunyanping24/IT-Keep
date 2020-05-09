@@ -28,7 +28,7 @@ springboot场景启动器就是我们在springboot项目中常使用的starters�
 
 Spring Boot 自定义Starter命名规则（官方建议）：
 - Spring官方：`spring-boot-starter-{模块名称}`，比如`spring-boot-starter-redis`
-- 第三方：`{模块名}-spring-boot-starter`
+- 第三方：`{模块名}-spring-boot-starter`      
 虽说是官方建议，但是使用springboot框架就要遵循“约定高于配置”这一原则。所以按照官方的建议来命名吧。
 
 ![](http://sunyanping.gitee.io/it-keep/ASSET/starter核心说明.png)
