@@ -4,6 +4,7 @@
 - [Spring Boot的核心注解`@SpringBootApplication`](#spring-boot的核心注解springbootapplication)
 - [开启延时初始化](#开启延时初始化)
 - [什么是SpringBoot场景启动器(`spring-boot-starter-*`)](#什么是springboot场景启动器spring-boot-starter-)
+- [bootstrap.yml 和 application.yml 的区别](#bootstrapyml-和-applicationyml-的区别)
 
 <!-- /TOC -->
 # Spring Boot介绍和特点
@@ -31,6 +32,18 @@ Spring Boot 自定义Starter命名规则（官方建议）：
 虽说是官方建议，但是使用springboot框架就要遵循“约定高于配置”这一原则。所以按照官方的建议来命名吧。
 
 ![](http://sunyanping.gitee.io/it-keep/ASSET/starter核心说明.png)
+
+# bootstrap.yml 和 application.yml 的区别
+在SpringBoot的官方文档中并没有这块的说明，但是在SpringCloud的官方文档中有提及到，大意如下。
+> Spring Cloud 构建于 Spring Boot 之上，在 Spring Boot 中有两种上下文，一种是 bootstrap, 另外一种是 application, bootstrap 是应用程序的父上下文，也就是说 bootstrap 加载优先于 applicaton。bootstrap 主要用于从额外的资源来加载配置信息，还可以在本地外部配置文件中解密属性。这两个上下文共用一个环境，它是任何Spring应用程序的外部属性的来源。bootstrap 里面的属性会优先加载，它们默认也不能被本地相同配置覆盖。
+
+**总结一下：**    
+- Spring Cloud 构建于 Spring Boot 之上，**在 Spring Boot 中有两种上下文，一种是 bootstrap,另外一种是 application**。
+- **application 配置文件主要用于 Spring Boot 项目的自动化配置。**
+- bootstrap 主要用于从额外的资源来加载配置信息，还可以在本地外部配置文件中解密属性。
+- **bootstrap 是应用程序的父上下文，也就是说 bootstrap 加载优先于 applicaton。**
+- **boostrap 由父 ApplicationContext 加载，会优先加载，它们默认也不能被本地相同配置覆盖。即就是bootstrap中的配置不能被application中的配置覆盖。**
+- 这两个上下文共用一个环境，它是任何Spring应用程序的外部属性的来源。
 
 
 **Spring Boot比较好的，我个人推荐的一些文章。这些文章可以帮助我们更好更容易的理解Spring Boot框架。我个人计划在将来会根据Spring Boot的官方文档进行系统的学习，并记录相关的学习笔记。**     
