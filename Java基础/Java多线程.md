@@ -33,6 +33,7 @@ Runnable是一个函数接口，其中只有一个`run()`函数
 - 继承`Thread`
 Thread是一个类，也是实现了`Runnable`，其中包含了很多方法。所以采用这中方式也是相对于增加了开销.
 - 使用线程池（一般在实际的开发中需要使用这种方式，方便对线程的统一管理）
+
 ```
 public static void main(String[] args) {
     new Thread(new Thread1()).start();
