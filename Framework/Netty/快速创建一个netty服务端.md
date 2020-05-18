@@ -204,7 +204,7 @@ public class SocketResponseHandler extends ChannelOutboundHandlerAdapter {
 1. EventLoopGroup 是一组 EventLoop 的抽象， Netty 为了更好的利用多核 CPU 资源， 一般会有多个 EventLoop同时工作， 每个 EventLoop 维护着一个 Selector 实例。
 2. EventLoopGroup 提供 next 接口， 可以从组里面按照一定规则获取其中一个 EventLoop 来处理任务。 在 Netty服 务 器 端 编 程 中 ， 我 们 一 般 都 需 要 提 供 两 个 EventLoopGroup ，例 如 ： BossEventLoopGroup 和WorkerEventLoopGroup。
 3. 通常一个服务端口即一个 ServerSocketChannel 对应一个 Selector 和一个 EventLoop 线程。 BossEventLoop 负责接收客户端的连接并将 SocketChannel 交给 WorkerEventLoopGroup 来进行 IO 处理， 如下图所示      
-![EventLoopGroup](http://sunyanping24.gitee.io/ASSET/EventLoopGroup.png)
+![EventLoopGroup](https://sunyanping24.github.io/IT-Keep/ASSET/EventLoopGroup.png)
 
 # ChannelHandler中的handler的执行顺序
 有时需要在ChannelHandler添加多个业务处理handler，多个handler的执行顺序通常是：ChannelInboundHandler按照注册的先后顺序执行；ChannelOutboundHandler按照注册的先后顺序逆序执行。
