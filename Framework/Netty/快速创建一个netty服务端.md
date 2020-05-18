@@ -1,6 +1,9 @@
 <!-- TOC -->
 
 - [构建Netty服务端](#构建netty服务端)
+  - [1.使用Netty服务端引导类启动](#1使用netty服务端引导类启动)
+  - [2. 读数据handler(`ChannelInboundHandler`)](#2-读数据handlerchannelinboundhandler)
+  - [3. 写数据handler(`ChannelOutboundHandler`)](#3-写数据handlerchanneloutboundhandler)
 - [Bootstrap Netty引导类](#bootstrap-netty引导类)
 - [EventLoopGroup](#eventloopgroup)
 - [ChannelHandler中的handler的执行顺序](#channelhandler中的handler的执行顺序)
@@ -11,7 +14,8 @@
 
 # 构建Netty服务端
 
-1. 使用Netty服务端引导类启动
+## 1.使用Netty服务端引导类启动
+
 ```
 @SuppressWarnings("all")
 @Autowired(required = false)
@@ -133,7 +137,8 @@ public void stop() {
 }    
 ```
 
-2. 读数据handler(`ChannelInboundHandler`)
+## 2. 读数据handler(`ChannelInboundHandler`)
+
 ```
 @Component
 @ChannelHandler.Sharable
@@ -167,7 +172,8 @@ public class SocketRequestHandler extends SimpleChannelInboundHandler<String> {
 }
 ```
 
-3. 写数据handler(`ChannelOutboundHandler`)
+## 3. 写数据handler(`ChannelOutboundHandler`)
+
 ```
 @Component
 @ChannelHandler.Sharable
@@ -197,7 +203,7 @@ public class SocketResponseHandler extends ChannelOutboundHandlerAdapter {
 # EventLoopGroup
 1. EventLoopGroup 是一组 EventLoop 的抽象， Netty 为了更好的利用多核 CPU 资源， 一般会有多个 EventLoop同时工作， 每个 EventLoop 维护着一个 Selector 实例。
 2. EventLoopGroup 提供 next 接口， 可以从组里面按照一定规则获取其中一个 EventLoop 来处理任务。 在 Netty服 务 器 端 编 程 中 ， 我 们 一 般 都 需 要 提 供 两 个 EventLoopGroup ，例 如 ： BossEventLoopGroup 和WorkerEventLoopGroup。
-3. 通常一个服务端口即一个 ServerSocketChannel 对应一个 Selector 和一个 EventLoop 线程。 BossEventLoop 负责接收客户端的连接并将 SocketChannel 交给 WorkerEventLoopGroup 来进行 IO 处理， 如下图所示 
+3. 通常一个服务端口即一个 ServerSocketChannel 对应一个 Selector 和一个 EventLoop 线程。 BossEventLoop 负责接收客户端的连接并将 SocketChannel 交给 WorkerEventLoopGroup 来进行 IO 处理， 如下图所示      
 ![EventLoopGroup](http://sunyanping24.gitee.io/ASSET/EventLoopGroup.png)
 
 # ChannelHandler中的handler的执行顺序
