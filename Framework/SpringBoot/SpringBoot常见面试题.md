@@ -5,6 +5,7 @@
 - [开启延时初始化](#开启延时初始化)
 - [什么是SpringBoot场景启动器(`spring-boot-starter-*`)](#什么是springboot场景启动器spring-boot-starter-)
 - [bootstrap.yml 和 application.yml 的区别](#bootstrapyml-和-applicationyml-的区别)
+- [Http异步](#http异步)
 
 <!-- /TOC -->
 # Spring Boot介绍和特点
@@ -44,6 +45,33 @@ Spring Boot 自定义Starter命名规则（官方建议）：
 - **bootstrap 是应用程序的父上下文，也就是说 bootstrap 加载优先于 applicaton。**
 - **boostrap 由父 ApplicationContext 加载，会优先加载，它们默认也不能被本地相同配置覆盖。即就是bootstrap中的配置不能被application中的配置覆盖。**
 - 这两个上下文共用一个环境，它是任何Spring应用程序的外部属性的来源。
+
+# Http异步
+HTTP异步的目的在帮助`DispatcherServlet`分担压力，提升吞吐量。但如果运行在NIO模式的服务容器上，就会产生负面影响，因为NIO本身就做了类似的事情，此时再加HTTP异步，则相当于又加了N多不必要的线程，导致性能主要消耗在线程的开销上，所以建议使用tomcat作为内嵌容器并且没有开启tomcat的NIO模式时，可以配合HTTP异步来提升程序性能。尤其是当业务繁重时，提升效果尤其明显。
+在SpringBoot中编写HTTP异步代码，简单展示如下：(主要使用的是`WebAsyncTask`)    
+```
+@GetMapping("/hi")
+    public WebAsyncTask<String> sayHi() {
+        log.info("say hi ==> {}", Thread.currentThread().getName());
+        WebAsyncTask<String> asyncTask = new WebAsyncTask<>(8000, () -> {
+            log.info("say hi ==> {}", Thread.currentThread().getName());
+            return "hi";
+        });
+
+        asyncTask.onTimeout(() -> {
+            log.info("超时了");
+            return "timeout";
+        });
+
+        asyncTask.onError(() -> {
+            return "HI I ERROR";
+        });
+
+        return asyncTask;
+    }
+```
+
+
 
 
 **Spring Boot比较好的，我个人推荐的一些文章。这些文章可以帮助我们更好更容易的理解Spring Boot框架。我个人计划在将来会根据Spring Boot的官方文档进行系统的学习，并记录相关的学习笔记。**     
