@@ -23,6 +23,17 @@
   - [是否允许跨域的判定](#是否允许跨域的判定)
     - [浏览器判定流程](#浏览器判定流程)
     - [配置服务器实现跨域传输](#配置服务器实现跨域传输)
+- [HTTPS](#https)
+  - [HTTPS采用的加密方案：对称加密+非对称加密](#https采用的加密方案对称加密非对称加密)
+  - [单项认证](#单项认证)
+  - [双向认证](#双向认证)
+- [Websocket](#websocket)
+- [Nginx](#nginx)
+  - [nginx作为web服务器和tomcat作为web服务器的区别](#nginx作为web服务器和tomcat作为web服务器的区别)
+  - [nginx作为反向代理服务器](#nginx作为反向代理服务器)
+  - [nginx的upstream模块](#nginx的upstream模块)
+- [Tomcat](#tomcat)
+  - [Tomcat的性能调优](#tomcat的性能调优)
 
 <!-- /TOC -->
 
@@ -290,3 +301,170 @@ Https：是以安全为目标的Http通道，是Http的安全版。Https的安�
 - Access-Control-Allow-Credentials（可选） – 该项标志着请求当中是否包含cookies信息，只有一个可选值：true（必为小写）。如果不包含cookies，请略去该项，而不是填写false。这一项与XmlHttpRequest2对象当中的withCredentials属性应保持一致，即withCredentials为true时该项也为true；withCredentials为false时，省略该项不写。反之则导致请求失败。
 
 - Access-Control-Max-Age（可选） – 以秒为单位的缓存时间。预请求的的发送并非免费午餐，允许时应当尽可能缓存。
+
+# HTTPS
+
+`HTTP`协议：超文本传输协议。内容是明文传输。  
+`HTTPS`协议：安全通信的超文本传输协议。内容是密文传输。
+
+这两者都是基于TCP协议的。但是HTTPS协议是基于HTTP上又添加了`TLS`协议,而`TLS`协议的前身又是`SSL`协议。**TLS协议是传输层加密协议**。由于HTTP是明文传输的，所以很容易就可以通过抓包获取到传输的内容，所以就催生了HTTPS的诞生。
+
+HTTPS相对HTTP提供了更安全的数据传输保障，主要体现在三个方面：
+
+1. 内容加密：客户端到服务器的内容都是以加密形式传输，中间者无法直接查看明文内容；
+
+2. 身份认证：通过校验保证客户端访问的是自己的服务器；
+
+3. 数据完整性：防止内容被第三方冒充或者篡改。
+
+## HTTPS采用的加密方案：对称加密+非对称加密
+1. 对称加密效率高，并且密文难破解，但是密钥需要在网络中传输给服务器，这样要是被捕获到，就很容易被黑客破解。
+2. 非对称加密效率低，但是私钥只有一方拥有，密文只能被私钥解开。安全性很高。
+
+基于以上2点的原因，HTTPS使用两者结合的方式。使用对称加密的方式加密内容，使用非对称加密的方式加密解密的密钥。这样就取得一个平衡点。
+
+## 单项认证
+
+1. 客户端发送TLS版本等信息
+2. 服务端给客户端返回TLS版本、随机数等信息，以及服务器公钥。
+3. 客户端校验服务端证书是否合法，合法继续，否则告警
+4. 客户端发送自己可支持的对称加密方案给服务端供其选择
+5. 服务器选择加密程度高的加密方式
+6. 服务器将选择好的加密方案以明文的方式方给客户端
+7. 客户端收到加密方式后，产生随机码，作为对称加密的密钥，使用对称加密密钥加密后的信息和使用服务端公钥进行加密后的密钥，发送给服务端
+8. 服务端使用私钥对对称加密的密钥进行解密，然后再使用对称密钥解密数据内容
+
+## 双向认证
+
+1. 客户端发送TLS版本等信息
+2. 服务端给客户端返回TLS版本、随机数等信息，以及服务器公钥。
+3. 客户端校验服务端证书是否合法，合法继续，否则告警
+4. 客户端将自己的证书及公钥发送给服务端
+5. 服务端对客户端的证书进行校验，校验通过后，获得客户端的公钥
+6. 客户端发送自己可支持的对称加密方案给服务端供其选择
+7. 服务器选择加密程度高的加密方式，使用客户端的公钥加密后发送给客户端
+8. 客户端收到加密方式后，产生随机码，作为对称加密的密钥，使用对称加密密钥加密后的信息和使用服务端公钥进行加密后的密钥，发送给服务端
+8. 服务端使用私钥对对称加密的密钥进行解密，然后再使用对称密钥解密数据内容
+
+# Websocket
+
+`Websocket`协议是H5出的，是一个持久化的协议。主要是为了解决HTTP是非持久化协议的问题。虽然HTTP协议也可以长连接keep-alive,可以在一次连接中发送多次请求，但是他永远都是一个Request对应一个Response,并且Response都是被动的，不可能主动发起。
+
+# Nginx
+
+## nginx作为web服务器和tomcat作为web服务器的区别
+
+1. nginx只可以处理静态资源，处理静态资源的效率非常高。占用内存少。
+2. nginx可以做反向代理服务器
+3. nginx模块化配置很灵活
+4. tomcat可以处理静态资源也可以处理动态请求资源
+5. tomcat可以作为servlet容器，相当于是一个应用服务器
+
+## nginx作为反向代理服务器
+
+**正向代理**：客户端将请求发送给代理服务器，并告知代理服务器需要使用哪个后台服务处理该请求，然后代理服务器，将请求发送给服务器，并将服务器响应的数据返回给客户端。
+
+**反向代理**：客户端将请求发送给代理服务器，由代理服务器自行确定使用哪台后台服务器处理该请求，然后将服务器相应的数据返回给客户端。
+
+**为什么使用反向代理**：  
+1. 所有请求都必须经过代理服务器，可以起到保护网站安全的作用。
+2. 实现负载均衡。
+3. 通过缓存静态资源，加速web请求。
+
+## nginx的upstream模块
+
+nginx的upstream模块是用来做负载均衡的，使用upstream可以定义负载的服务器组。如下：
+
+```
+http {
+
+    upstream server-cluster {
+
+        server 192.168.3.84:8088 weight=1 max-fails=3 fail-timeout=20s;
+        server 192.168.3.83:8088 weight=2;
+
+        server 192.168.3.82:8088 backup;
+    }
+
+    server {
+       ... 
+
+       location / {
+           proxy_pass http://server-cluster;
+           health_checks;
+       }
+    }
+}
+
+```
+
+1. nginx负载均衡的策略
+
+- 轮询： 将请求循环发送到后端服务器
+- weight: 通过权重值分配，权重值越大的分配到的请求次数越多
+- ip_hash: 按照客户端ip的hash结果分配。相同的客户端被分配的是同一服务。这样还可以保证session的一致性。
+- url_hash: 按照url的hash结果分配。这样相同的请求将被分配的是同一服务。
+- fair: 根据后台服务的相应时间来分配请求。
+
+# Tomcat
+
+1. tomcat是使用java语言编写的，运行在jvm上。
+2. tomcat与web/http请求  
+ tomcat的`Connector`组件实现了HTTP请求的解析，Tomcat通过`Connector`组件接收HTTP请求并解析，然后把解析的信息交给Servlet来处理：
+（1）对于静态资源，tomcat使用自己默认的servlet应用来处理
+（2）对于动态资源，tomcat使用部署的servlet应用来处理
+3. tomcat与nginx服务搭配使用
+
+## Tomcat的性能调优
+
+1. 调整`Connector`的连接数，可以适当的增加并发数
+
+server.xml
+```
+<Connector executor="tomcatThreadPool"
+            port="8080" protocol="HTTP/1.1"
+            connectionTimeout="20000"
+            redirectPort="8443" 
+            maxThreads="300"
+            minSpaceThread="50"
+            acceptCount="250"
+            enableLookups="false"
+            maxKeepAliveRequests="1"/>
+```
+2. 增加`Executor`,为tomcat配置线程池，可以减少线程的频繁创建与销毁，提高线程的使用效率。  
+server.xml
+```
+<Executor name="tomcatThreadPool"   
+         namePrefix="catalina-exec-"   
+         maxThreads="1000"   
+         minSpareThreads="100"  
+         maxIdleTime="60000"  
+         maxQueueSize="Integer.MAX_VALUE"  
+         prestartminSpareThreads="false"  
+         threadPriority="5"  
+         className="org.apache.catalina.core.StandardThreadExecutor"/>
+```
+3. 调整JVM参数，调整Tomcat运行时所需的虚拟内存。
+
+catalina.sh
+```
+JAVA_OPTS="$JAVA_OPTS -Xmx512m -Xms512m -Xmn170m -Xss128k --XX:NewRatio=4 -XX:SrrvivorRatio=4"
+```
+4. 调整垃圾回收策略
+
+catalina.sh
+```
+JAVA_OPTS="$JAVA_OPTS -Xmx512m -Xms512m -Xmn170m -Xss128k -XX:NewRatio=4 -XX:SrrvivorRatio=4 -XX:+UseParallelGC -XX:ParallelGCThreads=4 -XX:+UserParallelOldGC -XX:MaxGCPauseMillis=100"
+```
+**串行收集器**
+- `-XX:+UseSerialGC`: 代表的使用串行收集器
+
+**并行收集器**
+- `-XX:+UseParallelGC`: 代表使用的使并行收集器,仅对新生代有效。
+- `-XX:ParallelGCThreads=4`： 并行收集器的线程数量
+- `-XX:+UseParallelOldGC`: 老年代垃圾收集方式为并行收集
+- `-XX:MaxGCPauseMillis=100`: 每次年轻代垃圾回收的最长时间
+- `-XX:+UseAdaptiveSizePolicy`: 表示并行收集器会自动选择新生代区大小和相应的Survivor区比例，以达到目标系统规定的最低响应时间或者收集频率
+
+**并发收集器**
+- `-XX:+UseConcMarkSweepGC`: 代表使用的并发收集器

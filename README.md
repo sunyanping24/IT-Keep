@@ -17,6 +17,7 @@
   - [BuildTools](#buildtools)
   - [Network(网络基础)](#network网络基础)
   - [DevOps](#devops)
+  - [[杂混整理](杂混整理.md)](#杂混整理杂混整理md)
   - [GroceryStore](#grocerystore)
   - [文档说明](#文档说明)
 
@@ -93,6 +94,8 @@
 * [认识Docker](DevOps/认识Docker.md)
 * [Dockerfile的编写](DevOps/Dockerfile的编写.md)
 * [Docker与K8S的理解](DevOps/Docker与K8S的理解.md)
+
+## [杂混整理](杂混整理.md)
 
 ## GroceryStore
 * [还没来得及归类整理](GroceryStore/还没来得及归类整理.md)
