@@ -4,7 +4,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta charset="UTF-8">
-  <title>Java相关知识整理</title>
+  <title>我的文档网站</title>
   <link rel="stylesheet" href="//unpkg.com/docsify/lib/themes/vue.css">
 </head>
 <body>
@@ -14,9 +14,9 @@
       // 加载侧边栏 _sidebar.md
       // loadSidebar: true,
       // subMaxLevel: 2,
-
+      loadNavbar: true,
       // 文档标题，会显示在侧边栏顶部
-      name: 'Java相关知识整理',
+      name: '',
       // 点击文档标题后跳转的链接地址
       // nameLink: '/',
 
@@ -27,7 +27,7 @@
       auto2top: 'true',
 
       // 小屏设备下合并导航栏到侧边栏
-      mergeNavbar: true,
+      // mergeNavbar: true,
 
       // 在找不到指定页面时加载 _404.md
       //notFoundPage: true
@@ -45,7 +45,12 @@
         buttonText : 'Copy',
         errorText  : 'Error',
         successText: 'Copied'
-      }
+      },
+
+      // 页面渲染
+      coverpage: true,
+      // onlyCover: true,
+
     }
   </script>
   <script src="//unpkg.com/docsify/lib/docsify.min.js"></script>

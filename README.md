@@ -1,31 +1,29 @@
-# Java相关知识整理
 <!-- TOC -->
 
-- [Java相关知识整理](#java相关知识整理)
-  - [Tools](#tools)
-  - [Java基础](#java基础)
-  - [Database](#database)
-    - [MySQL](#mysql)
-    - [Redis](#redis)
-  - [消息中间件](#消息中间件)
-  - [Framework](#framework)
-    - [Mybatis](#mybatis)
-    - [分布式架构](#分布式架构)
-    - [Spring](#spring)
-    - [SpringBoot](#springboot)
-    - [Netty](#netty)
-  - [BuildTools](#buildtools)
-  - [Network(网络基础)](#network网络基础)
-  - [DevOps](#devops)
-  - [[杂混整理](杂混整理.md)](#杂混整理杂混整理md)
-  - [GroceryStore](#grocerystore)
-  - [文档说明](#文档说明)
+- [Tools](#tools)
+- [Java基础](#java基础)
+- [Database](#database)
+  - [MySQL](#mysql)
+  - [Redis](#redis)
+- [消息中间件](#消息中间件)
+- [Framework](#framework)
+  - [Mybatis](#mybatis)
+  - [分布式架构](#分布式架构)
+  - [Spring](#spring)
+  - [SpringBoot](#springboot)
+  - [Netty](#netty)
+- [BuildTools](#buildtools)
+- [Network(网络基础)](#network网络基础)
+- [DevOps](#devops)
+- [[杂混整理](杂混整理.md)](#杂混整理杂混整理md)
+- [GroceryStore](#grocerystore)
+- [文档说明](#文档说明)
 
 <!-- /TOC -->
 
 ***
 
-## Tools
+# Tools
 *  [GIT](Tools/GIT.md)
 *  [idea](Tools/idea.md)
 *  [vscode](Tools/vscode.md)
@@ -34,7 +32,7 @@
 *  [虚拟机及服务](Tools/虚拟机及服务.md)
 *  [windows](Tools/windows.md)
 
-## Java基础
+# Java基础
 * [Java基础知识整理](Java基础/Java基础知识整理.md)
 * [JVM知识点整理](Java基础/JVM知识点整理.md)
 * [Java多线程](Java基础/Java多线程.md)
@@ -42,66 +40,66 @@
 * [Java8的新特性使用](Java基础/Java8的新特性使用.md)
 * [Java容器](Java基础/Java容器.md)
 
-## Database
+# Database
 - [MySQL](#MySQL)
 - [Redis](#Redis)
-### MySQL
+## MySQL
 * [数据库连接池](Database/MySQL/数据库连接池.md)
 * [Mysql常用操作](Database/MySQL/Mysql常用的操作.md)
 * [Mysql存储过程、函数](Database/MySQL/Mysql存储过程、函数.md)
 * [MySQL常见面试题](Database/MySQL/MySQL常见面试题.md)
 * [MySQL高性能优化规范建议](Database/MySQL/MySQL高性能优化规范建议.md)
 * [Mysql服务常见问题处理](Database/MySQL/Mysql服务常见问题处理.md)
-### Redis
+## Redis
 * [Redis](Database/Redis/Redis.md)
 
-## 消息中间件
+# 消息中间件
 * [Kafka常用操作](Messages/Kafka常用操作.md)
 * [Kafka入门整理](Messages/Kafka入门整理.md)
 * [RabbitMQ入门整理](Messages/RabbitMQ入门整理.md)
 
-## Framework
+# Framework
 - [Mybatis](#Mybatis)
 - [分布式架构](#分布式架构)
 - [SpringBoot](#SpringBoot)
 - [Spring](#Spring)
 - [Netty](#Netty)
 
-### Mybatis
+## Mybatis
 * [Mybatis常见面试题](Framework/Mybatis/Mybatis常见面试题.md)
 
-### 分布式架构
+## 分布式架构
 * [微服务架构的设计](Framework/分布式架构/微服务架构的设计.md)
 * [分布式架构几大基础组件](Framework/分布式架构/分布式架构几大基础组件.md)
 
-### Spring
+## Spring
 * [Spring框架和常见面试题](Framework/Spring/Spring框架和常见面试.md)
 
-### SpringBoot
+## SpringBoot
 * [SpringBoot常见面试题](Framework/SpringBoot/SpringBoot常见面试题.md)
 
-### Netty
+## Netty
 * [快速创建一个netty服务端](Framework/Netty/快速创建一个netty服务端.md)
 
-## BuildTools
+# BuildTools
 * [maven](BuildTools/maven.md)
 
-## Network(网络基础)
+# Network(网络基础)
 * [计算机网络基础](Network/计算机网络基础.md)
 * [后端Web常见面试题](Network/后端Web常见面试题.md)
 
-## DevOps
+# DevOps
 * [认识Docker](DevOps/认识Docker.md)
 * [Dockerfile的编写](DevOps/Dockerfile的编写.md)
 * [Docker与K8S的理解](DevOps/Docker与K8S的理解.md)
 
-## [杂混整理](杂混整理.md)
+# [杂混整理](杂混整理.md)
 
-## GroceryStore
+# GroceryStore
 * [还没来得及归类整理](GroceryStore/还没来得及归类整理.md)
 
 ***
-## 文档说明
+# 文档说明
 
 **文档内容说明**    
 1. 该文档由我个人维护整理，纯粹是当作个人笔记来做的，维护在这个平台仅仅是为了查看笔记方便，加强和有同样兴趣的人的交流。**不能用于任何商业用途**。
