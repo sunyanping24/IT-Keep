@@ -32,13 +32,13 @@
       // 在找不到指定页面时加载 _404.md
       //notFoundPage: true
 
-      // search: {
-      //   maxAge: 86400000, // 过期时间，单位毫秒，默认一天
-      //   paths: 'auto',
-      //   placeholder: 'Type to search',
-      //   noData: 'No Results!',
-      //   depth: 6          // 搜索标题的最大程级, 1 - 6
-      // },
+      search: {
+        maxAge: 86400000, // 过期时间，单位毫秒，默认一天
+        paths: 'auto',
+        placeholder: 'Type to search',
+        noData: 'No Results!',
+        depth: 6          // 搜索标题的最大程级, 1 - 6
+      },
 
       // 点击复制
       copyCode: {
@@ -59,7 +59,7 @@
   <!-- 每页都显示上一章、下一章 -->
   <script src="//unpkg.com/docsify-pagination/dist/docsify-pagination.min.js"></script>
   <!-- 显示搜索功能 -->
-  <!-- <script src="//unpkg.com/docsify/lib/plugins/search.js"></script> -->
+  <script src="//unpkg.com/docsify/lib/plugins/search.js"></script>
   <!-- 点击代码可以复制 -->
   <script src="//unpkg.com/docsify-copy-code"></script>
   <!-- bash语法高亮 -->
