@@ -33,7 +33,7 @@
 为支持这些使用场景导致设计了一些独特的元素，使得 Kafka 相比传统的消息系统更像是数据库日志。
 
 # 一张图理解Kafka
-![Kafka是一个分布式流处理平台](http://sunyanping.gitee.io/it-keep/ASSET/一张图理解Kafka整体框架.jpg)
+![Kafka是一个分布式流处理平台](http://sunyanping.gitee.io/it-keep/ASSET/一张图理解Kafka整体框架.jpg)  
 这张图是Kafka官网首页上的图，这个图基本上就将Kafka的4大核心功能和应用就描述的很清楚了。
 > Apache Kafka® 是 一个分布式流处理平台.
 
@@ -45,7 +45,7 @@
 - **Producer API:** 允许一个应用程序发布一串流式的数据到一个或者多个Kafka topic。
 - **Consumer API:**  允许一个应用程序订阅一个或多个 topic ，并且对发布给他们的流式数据进行处理。
 - **Connector API:**  允许一个应用程序作为一个流处理器，消费一个或者多个topic产生的输入流，然后生产一个输出流到一个或多个topic中去，在输入输出流中进行有效的转换。
-- **Stream API:** 许构建并运行可重用的生产者或者消费者，将Kafka topics连接到已存在的应用程序或者数据系统。比如，连接到一个关系型数据库，捕捉表（table）的所有变更内容。
+- **Stream API:** 允许构建并运行可重用的生产者或者消费者，将Kafka topics连接到已存在的应用程序或者数据系统。比如，连接到一个关系型数据库，捕捉表（table）的所有变更内容。
 
 ## Kafka的几个重要概念（我一开始学习Kafka是完全是懵逼状态的，这几个概念一定要搞清楚）
 **Kafka拓扑结构**   
