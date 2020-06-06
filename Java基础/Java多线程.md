@@ -15,6 +15,14 @@
   - [`ConcurrentLinkedQueue`](#concurrentlinkedqueue)
   - [`BlockingQueue`（待实战中总结）](#blockingqueue待实战中总结)
   - [`ConcurrentSkipListMap`（待实战中总结）](#concurrentskiplistmap待实战中总结)
+- [ThreadLocal](#threadlocal)
+  - [线程上下文和ThreadLocal](#线程上下文和threadlocal)
+  - [ThreadLocal的内存泄漏问题](#threadlocal的内存泄漏问题)
+- [Java的4种引用类型（强、软、弱、虚）](#java的4种引用类型强软弱虚)
+  - [强引用](#强引用)
+  - [软引用](#软引用)
+  - [弱引用](#弱引用)
+  - [虚引用](#虚引用)
 
 <!-- /TOC -->
 
@@ -210,3 +218,121 @@ public E get(int index) {
 
 ## `ConcurrentSkipListMap`（待实战中总结）
 跳表的实现。这是一个 Map，使用跳表的数据结构进行快速查找。
+
+# ThreadLocal
+*此处是参考这篇文章整理：[http://www.threadlocal.cn/](http://www.threadlocal.cn/)*
+
+## 线程上下文和ThreadLocal
+正常来讲，每个线程都会有一个 “上下文(context)” ，在这个上下文中可以存放数据，在该线程的管辖范围内都能获取到这些数据。
+
+但是线程本来就是属于重型对象，非常的耗费资源，如果在创建线程的时候再创建个上下文，岂不是相当于线程更加加重了。所以在JDK的设计中，设计者就做了一个优化，
+当创建线程时，只是为上下文标记了一个位置，而在真正使用线程上下文的时候再创建这个上下文。这就相当于延迟创建了线程上下文。这样的话就提升了创建线程的效率。
+而用来**负责创建线程上下文的对象就是`ThreadLocal`**。
+
+通常我们可以看见类似这样的代码：
+```
+private static ThreadLocal<String> threadLocal = new ThreadLocal<>();
+...
+threadLocal.set("hello");
+...
+threadLocal.get();
+```
+这就是通常`ThreadLocal`的使用方法。
+线程的上下文就是用来存放东西的，ThreadLocal负责创建线程context，同样，也是通过ThreadLocal来操作context中的数据的，通常使用set和get来进行存取操作。
+
+ThreadLocal在set数据时，将自己也作为参数存进去了`map.set(this, value)`，如下：
+```
+public void set(T value) {
+    Thread t = Thread.currentThread();
+    ThreadLocalMap map = getMap(t);
+    if (map != null)
+        map.set(this, value);
+    else
+        createMap(t, value);
+}
+```
+为什么ThreadLocal要将自己放进去呢？因为一个线程的上下文只有一个，如果是一个ThreadLocal对象操作context那就没有问题；但是如果有多个ThreadLocal操作线程的上下文，那就需要区分是哪个ThreadLocal存进去的数据，这样取数据时才能不混乱。       
+
+我们可以将ThreadLocal看作一个代理对象，如下图所示：     
+![](http://sunyanping.gitee.io/IT-Keep/ASSET/Thread和ThreadContext和ThreadLocal之间的关系.png)
+
+## ThreadLocal的内存泄漏问题
+
+可以参考这篇文章理解：[https://blog.csdn.net/qq_31821675/article/details/105316177](https://blog.csdn.net/qq_31821675/article/details/105316177)
+
+通过TheadLocal将数据存放在ThreadContext（ThreadLocal是一片内存区域），那如果说这块区域的数据不能被及时销毁，必然就存在内存泄露的风险。
+
+**为什么内存会发生泄露？**    
+内存发生泄漏的前提有两个：  
+- ThreadLocalRef用完后，没有手动清除Entry
+- ThreadLocalRef用完后，当前线程没有销毁仍然在继续运行，比如使用线程池的情况下
+
+> 个人钻牛角尖时的一个想法：由于key指向ThreadLocal实例是弱引用，会不会在当前线程运行期间，将ThreadLocal实例给回收了呢？     
+答案自然是：不会。      
+因为当前线程只要仍然使用着ThreadLocal，首先ThreadLocal变量指向ThreadLocal实例的强引用就必然存在，那么ThreadLocal实例自然不会被回收，那么key也就会一直指向ThreadLocal实例。在Java8中这个想法也是牛逼的很。当然假如ThreadLocal实例只被key引用，那只要gc一执行，ThreadLocal实例肯定被回收。
+
+**ThreadLocal中的弱引用如何理解？** 
+
+在Thread内部维护了一个ThreadLocal.ThreadLocalMap，数据都是在这个Map结构中存放。ThreadLocal在`set()`时将自己作为参数传入，并且将自己作为了Map的key，数据作为Map的value。ThreadLocal使用`get()`获取数据时，就是通过ThreadLocal和key之间的联系来取的，所以key必须指向对应的ThreadLocal对象，key指向ThreadLocal的这个引用就是弱引用。
+
+**为什么不设计成强引用呢？**   
+
+**1. 如果设计成强引用**
+
+那么在线程用完ThreadLocalRef后，没有没有手动清除Rntry，当前线程也没有销毁仍然在运行，那由于key一直引用ThreadLocal实例，ThreadLocal实例不会被回收，同时Entry数据不会销毁。这样（1）ThreadLocal实例占用内存（2）Entry数据占用内存。更易发生内存泄漏。
+![ThreadLocal设计成强引用](/ASSET/ThreadLocal设计成强引用.png)
+
+**2. 如果设计成弱引用**     
+那么就算线程用完ThreadLocalRef后，，没有没有手动清除Rntry，当前线程也没有销毁仍然在运行，那由于key引用ThreadLocal实例是弱引用，ThreadLocal实例在下次gc时也会被回收，key的引用也会变成null，当下次调用set/get/remove方法时，由于key==null，那value也会被清除（这个在ThreadLocal的源码中能看到），从而避免内存泄漏。
+![ThreadLocal设计成弱引用](/ASSET/ThreadLocal设计成弱引用.png)
+
+**所以在使用ThreadLocal的地方一定要记得使用`remove()`来清理内存中的数据。**
+
+# Java的4种引用类型（强、软、弱、虚）
+Java中设计了4种引用类型（强、软、弱、虚引用），在Java种使用最多最广泛的就是Strong Reference，比如：`String a = "123"`，就属于Strong Reference。
+Strong Reference为JVM内部实现，其他三种引用类型全部继承自Reference类，如下所示：    
+![](http://sunyanping.gitee.io/IT-Keep/ASSET/Java中的reference类结构.jpg)
+
+## 强引用
+Strong Rerence这个类并不存在，默认的对象都是强引用类型，因为有后来的新引用所衬托，所以才起了个名字叫"强引用"。      
+
+如果JVM垃圾回收器 GC 可达性分析结果为可达，表示引用类型仍然被引用着，这类对象始终不会被垃圾回收器回收，即使JVM发生OOM也不会回收。而如果 GC 的可达性分析结果为不可达，那么在GC时会被回收。
+
+## 软引用
+软引用是一种比强引用生命周期稍弱的一种引用类型。在JVM内存充足的情况下，软引用并不会被垃圾回收器回收，只有在JVM内存不足的情况下，才会被垃圾回收器回收。所以软引用一般用来实现一些内存敏感的缓存，只要内存空间足够，对象就会保持不被回收掉。
+```
+SoftReference<String> softReference = new SoftReference<String>(new String("123"));
+String str = softReference.get();
+```
+
+## 弱引用
+弱引用是一种比软引用生命周期更短的引用。它的生命周期很短，不论当前内存是否充足，都只能存活到下一次垃圾收集之前。
+```
+WeakReference<String> weakReference = new WeakReference<String>(new String("123"));
+
+System.gc();
+
+if(weakReference.get() == null)
+{
+    System.out.println("weakReference已经被GC回收");
+}
+
+```
+输出结果：
+
+weakReference已经被GC回收
+
+## 虚引用
+
+虚引用与前面的几种都不一样，这种引用类型不会影响对象的生命周期，所持有的引用就跟没持有一样，随时都能被GC回收。
+
+需要注意的是，在使用虚引用时，必须和引用队列关联使用。在对象的垃圾回收过程中，如果GC发现一个对象还存在虚引用，则会把这个虚引用加入到与之关联的引用队列中。
+
+程序可以通过判断引用队列中是否已经加入了虚引用，来了解被引用的对象是否将要被垃圾回收。
+
+如果程序发现某个虚引用已经被加入到引用队列，那么就可以在所引用的对象内存被回收之前采取必要的行动防止被回收。虚引用主要用来跟踪对象被垃圾回收器回收的活动。
+```
+PhantomReference<String> phantomReference = new PhantomReference<String>(new String("123"), new ReferenceQueue<String>());
+
+System.out.println(phantomReference.get());
+```
