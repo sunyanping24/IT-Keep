@@ -280,11 +280,11 @@ public void set(T value) {
 **1. 如果设计成强引用**
 
 那么在线程用完ThreadLocalRef后，没有没有手动清除Rntry，当前线程也没有销毁仍然在运行，那由于key一直引用ThreadLocal实例，ThreadLocal实例不会被回收，同时Entry数据不会销毁。这样（1）ThreadLocal实例占用内存（2）Entry数据占用内存。更易发生内存泄漏。
-![ThreadLocal设计成强引用](/ASSET/ThreadLocal设计成强引用.png)
+![ThreadLocal设计成强引用](http://sunyanping.gitee.io/IT-Keep/ASSET/ThreadLocal设计成强引用.png)
 
 **2. 如果设计成弱引用**     
 那么就算线程用完ThreadLocalRef后，，没有没有手动清除Rntry，当前线程也没有销毁仍然在运行，那由于key引用ThreadLocal实例是弱引用，ThreadLocal实例在下次gc时也会被回收，key的引用也会变成null，当下次调用set/get/remove方法时，由于key==null，那value也会被清除（这个在ThreadLocal的源码中能看到），从而避免内存泄漏。
-![ThreadLocal设计成弱引用](/ASSET/ThreadLocal设计成弱引用.png)
+![ThreadLocal设计成弱引用](http://sunyanping.gitee.io/IT-Keep/ASSET/ThreadLocal设计成弱引用.png)
 
 **所以在使用ThreadLocal的地方一定要记得使用`remove()`来清理内存中的数据。**
 
