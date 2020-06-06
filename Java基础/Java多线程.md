@@ -280,18 +280,18 @@ public void set(T value) {
 **1. 如果设计成强引用**
 
 那么在线程用完ThreadLocalRef后，没有没有手动清除Rntry，当前线程也没有销毁仍然在运行，那由于key一直引用ThreadLocal实例，ThreadLocal实例不会被回收，同时Entry数据不会销毁。这样（1）ThreadLocal实例占用内存（2）Entry数据占用内存。更易发生内存泄漏。
-![ThreadLocal设计成强引用](http://sunyanping.gitee.io/IT-Keep/ASSET/ThreadLocal设计成强引用.png)
+![ThreadLocal设计成强引用](http://sunyanping.gitee.io/it-keep/ASSET/ThreadLocal设计成强引用.png)
 
 **2. 如果设计成弱引用**     
 那么就算线程用完ThreadLocalRef后，，没有没有手动清除Rntry，当前线程也没有销毁仍然在运行，那由于key引用ThreadLocal实例是弱引用，ThreadLocal实例在下次gc时也会被回收，key的引用也会变成null，当下次调用set/get/remove方法时，由于key==null，那value也会被清除（这个在ThreadLocal的源码中能看到），从而避免内存泄漏。
-![ThreadLocal设计成弱引用](http://sunyanping.gitee.io/IT-Keep/ASSET/ThreadLocal设计成弱引用.png)
+![ThreadLocal设计成弱引用](http://sunyanping.gitee.io/it-keep/ASSET/ThreadLocal设计成弱引用.png)
 
 **所以在使用ThreadLocal的地方一定要记得使用`remove()`来清理内存中的数据。**
 
 # Java的4种引用类型（强、软、弱、虚）
 Java中设计了4种引用类型（强、软、弱、虚引用），在Java种使用最多最广泛的就是Strong Reference，比如：`String a = "123"`，就属于Strong Reference。
 Strong Reference为JVM内部实现，其他三种引用类型全部继承自Reference类，如下所示：    
-![](http://sunyanping.gitee.io/IT-Keep/ASSET/Java中的reference类结构.jpg)
+![](http://sunyanping.gitee.io/it-keep/ASSET/Java中的reference类结构.jpg)
 
 ## 强引用
 Strong Rerence这个类并不存在，默认的对象都是强引用类型，因为有后来的新引用所衬托，所以才起了个名字叫"强引用"。      
