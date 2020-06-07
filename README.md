@@ -53,6 +53,7 @@
 ## Redis
 * [Redis](Database/Redis/Redis.md)
 * [Redis的单线程模型](Database/Redis/Redis的单线程模型.md)
+* [Redis的三种集群模式](Database/Redis/Redis的三种集群模式.md)
 
 # 消息中间件
 * [Kafka常用操作](Messages/Kafka常用操作.md)
