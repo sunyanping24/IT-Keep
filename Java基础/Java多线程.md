@@ -254,7 +254,7 @@ public void set(T value) {
 为什么ThreadLocal要将自己放进去呢？因为一个线程的上下文只有一个，如果是一个ThreadLocal对象操作context那就没有问题；但是如果有多个ThreadLocal操作线程的上下文，那就需要区分是哪个ThreadLocal存进去的数据，这样取数据时才能不混乱。       
 
 我们可以将ThreadLocal看作一个代理对象，如下图所示：     
-![](http://sunyanping.gitee.io/IT-Keep/ASSET/Thread和ThreadContext和ThreadLocal之间的关系.png)
+![将ThreadLocal看作一个代理对象](http://sunyanping.gitee.io/it-keep/ASSET/Thread和ThreadContext和ThreadLocal之间的关系.png)
 
 ## ThreadLocal的内存泄漏问题
 
