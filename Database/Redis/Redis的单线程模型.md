@@ -24,3 +24,7 @@ Redis单线程模型，核心部分就是通过文件处理器模型来实现的
 Redis是如何实现在多客户端并发下，单线程处理数据的，关键点就在 **队列** ，I/O多路复用程序在接收到不同客户端发送来的数据时，将这些Socket事件压入队列，然后按照顺序传送Socket事件给事件分派器，该Socket事件处理完成之后，才能处理下一个。这样就保证了任何时间都是单线程处理数据，也不用考虑并发带来的数据安全性。    
 ![IO多路复用程序使用队列向事件分配器传送Socket事件](http://sunyanping.gitee.io/it-keep/ASSET/IO多路复用程序使用队列向事件分配器传送Socket事件.jpg)
 
+**参考文章：**    
+- Redis的单线程模型：[https://blog.csdn.net/starcrm/article/details/106417503](https://blog.csdn.net/starcrm/article/details/106417503)
+- 为什么Redis是单线程的：[https://zhuanlan.zhihu.com/p/87233515](https://zhuanlan.zhihu.com/p/87233515)
+- Redis 6.0 新特性-多线程连环13问！[https://database.51cto.com/art/202005/616601.htm](https://database.51cto.com/art/202005/616601.htm)
