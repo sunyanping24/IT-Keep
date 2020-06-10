@@ -23,6 +23,7 @@
   - [软引用](#软引用)
   - [弱引用](#弱引用)
   - [虚引用](#虚引用)
+- [java.util.concurrent包](#javautilconcurrent包)
 
 <!-- /TOC -->
 
@@ -336,3 +337,10 @@ PhantomReference<String> phantomReference = new PhantomReference<String>(new Str
 
 System.out.println(phantomReference.get());
 ```
+
+# java.util.concurrent包
+1. locks部分：显式锁（互斥锁和速写锁）相关
+2. atomic部分：原子变量类相关，是构建非阻塞算法的基础
+3. executor部分：线程池相关
+4. collection部分：并发容器相关
+5. tools部分：同步工具相关，如信号量、闭锁、栅栏等功能
