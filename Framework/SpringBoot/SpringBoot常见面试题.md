@@ -6,6 +6,7 @@
 - [什么是SpringBoot场景启动器(`spring-boot-starter-*`)](#什么是springboot场景启动器spring-boot-starter-)
 - [bootstrap.yml 和 application.yml 的区别](#bootstrapyml-和-applicationyml-的区别)
 - [Http异步](#http异步)
+- [SpringBoot自动装配](#springboot自动装配)
 
 <!-- /TOC -->
 # Spring Boot介绍和特点
@@ -70,6 +71,33 @@ HTTP异步的目的在帮助`DispatcherServlet`分担压力，提升吞吐量。
         return asyncTask;
     }
 ```
+
+# SpringBoot自动装配
+SpringBoot自动装配的关键点在于`@SpringBootApplication`注解。该注解是一个复合注解，里面包含了`@EnableAutoConfiguration`、`@SpringBootConfiguration`两个主要的注解，`@EnableAutoConfiguration`注解就是用来自动加载默认组件自动装配的。该注解如下：
+```
+@Target({ElementType.TYPE})
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+@Inherited
+@AutoConfigurationPackage
+@Import({AutoConfigurationImportSelector.class})
+public @interface EnableAutoConfiguration {
+    String ENABLED_OVERRIDE_PROPERTY = "spring.boot.enableautoconfiguration";
+
+    Class<?>[] exclude() default {};
+
+    String[] excludeName() default {};
+}
+```
+其中`@Import({AutoConfigurationImportSelector.class})`这个注解引入了`AutoConfigurationImportSelector`这个自动配置选择器，在这个类里面包含了一些加载配置的实现逻辑。其中有这么一块代码：
+```
+private static Map<String, List<String>> loadSpringFactories(@Nullable ClassLoader classLoader) {
+    ...
+    Enumeration<URL> urls = classLoader != null ? classLoader.getResources("META-INF/spring.factories") : ClassLoader.getSystemResources("META-INF/spring.factories");
+    ...
+}
+```
+里面存在加载`META-INF/spring.factories`代码，这个文件里面配置的就是需要进行自动装配的配置类。这个文件是类似properties文件的来配置方式，以K,V的像是存在，K-接口路径,V-接口的实现(多个之间使用逗号,分割)
 
 
 
