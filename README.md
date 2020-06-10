@@ -72,7 +72,7 @@
 
 ## 分布式架构
 * [微服务架构的设计](Framework/分布式架构/微服务架构的设计.md)
-* [分布式架构几大基础组件](Framework/分布式架构/分布式架构几大基础组件.md)
+* [分布式架构基础知识](Framework/分布式架构/分布式架构基础知识.md)
 
 ## Spring
 * [Spring框架和常见面试题](Framework/Spring/Spring框架和常见面试.md)
