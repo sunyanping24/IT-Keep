@@ -158,6 +158,9 @@ git config --global user.email sunyanping24@sina.com	//设置提交代码用户�
 git config --system http.sslverify false    // 当git clone时经常遇到输入用户名和密码的窗口不弹出，可以使用此命令设置即可
 git config http.postBuffer 524288000    //设置http请求的缓存区的大小
 git config [--system|--global|--local] -l   // 查看git的系统级别/用户级别/仓库级别配置，查看仓库级别配置时需要在对应的仓库目录
+git config --global --replace-all user.name "yourName"    // 替换用户名
+git config --global --unset user.name "yourName"    // 删除用户名
+git config user.name    // 查看指定的信息
 ```
 
 # git远程库常用操作
