@@ -15,7 +15,6 @@
 - [BuildTools](#buildtools)
 - [Network(网络基础)](#network网络基础)
 - [DevOps](#devops)
-- [Java专题](#java专题)
 - [[杂混整理](杂混整理.md)](#杂混整理杂混整理md)
 - [GroceryStore](#grocerystore)
 - [文档说明](#文档说明)
@@ -96,8 +95,8 @@
 * [Dockerfile的编写](DevOps/Dockerfile的编写.md)
 * [Docker与K8S的理解](DevOps/Docker与K8S的理解.md)
 
-# Java专题
-* [Java锁机制](Java专题/Java锁机制.md)
+<!-- # Java专题
+* [Java锁机制](Java专题/Java锁机制.md) -->
 
 # [杂混整理](杂混整理.md)
 

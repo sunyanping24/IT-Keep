@@ -24,6 +24,13 @@
   - [弱引用](#弱引用)
   - [虚引用](#虚引用)
 - [java.util.concurrent包](#javautilconcurrent包)
+- [Locks-ReentrantLock、ReadWriteLock](#locks-reentrantlockreadwritelock)
+  - [ReentrantLock](#reentrantlock)
+    - [ReentrantLock的可重入性](#reentrantlock的可重入性)
+    - [ReentrantLock-公平锁、非公平锁](#reentrantlock-公平锁非公平锁)
+    - [与Condition结合进行线程的调度](#与condition结合进行线程的调度)
+  - [ReadWriteLock](#readwritelock)
+  - [其它常用的方法](#其它常用的方法)
 
 <!-- /TOC -->
 
@@ -344,3 +351,258 @@ System.out.println(phantomReference.get());
 3. executor部分：线程池相关
 4. collection部分：并发容器相关
 5. tools部分：同步工具相关，如信号量、闭锁、栅栏等功能
+
+# Locks-ReentrantLock、ReadWriteLock
+在Java中最常见同步锁是使用`synchronized`来实现的，`synchronized`是一个关键字，只要按照该关键字的使用规则对代码块/静态方法/实例方法进行修饰，这些代码块/类/实例方法就具有线程互斥性，以达到同步的效果。
+而其中的实现原理像其他关键字一样，底层是交给了JVM通过C++来实现的。在使用时无法在Java层面进行扩展和优化，灵活性不高，比如在使用时无法中断一个正在等待获取锁的线程，或者无法在请求一个锁时无限的等待下去。
+在Java5开始，Java中构建了一个和synchronized一样效果的Java类，同时还扩展了一些其他特性，比如定时锁的等待、可中断的锁和公平锁等。这个就是java.util.concurrent.locks下的锁。其中常用的主要包含了`ReentrantLocl`
+和`ReadWriteLock`。
+
+## ReentrantLock
+ReentrantLock的通用使用如下：
+```
+final Lock lock = new ReentrantLock();
+
+public void method1() {
+    try {
+        lock.lock();
+        System.out.println("method1 enter");
+        TimeUnit.MILLISECONDS.sleep(2000);
+        System.out.println("method1 exit");
+    }catch (InterruptedException e) {
+        e.printStackTrace();
+    } finally {
+        lock.unlock();
+    }
+}
+```
+以上的代码可以实现和synchronized同样的效果，但是需要的是显式的获取锁和释放锁，所以ReentrantLock也称为显式锁。
+
+### ReentrantLock的可重入性
+ReentrantLock和synchronized都具有可重入性，在当前线程已经获取锁的情况下，需要再次获取锁时，该线程会直接获取锁，不需要进行阻塞。
+```
+final Lock lock = new ReentrantLock();
+
+public void method1() {
+    try {
+        lock.lock();
+        System.out.println("method1 enter");
+        TimeUnit.MILLISECONDS.sleep(2000);
+        method2();
+        System.out.println("method1 exit");
+    }catch (InterruptedException e) {
+        e.printStackTrace();
+    } finally {
+        lock.unlock();
+    }
+}
+
+public void method2()  {
+    try {
+        lock.lock();
+        System.out.println(Thread.currentThread().getName());
+        System.out.println("method2 enter");
+        TimeUnit.MILLISECONDS.sleep(6000);
+        System.out.println("method2 exit");
+    } catch (InterruptedException e) {
+        e.printStackTrace();
+    } finally {
+        lock.unlock();
+    }
+}
+
+public static void main(String[] args) {
+    DemoReentrantLock demo = new DemoReentrantLock();
+    new Thread(() -> {
+        System.out.println(Thread.currentThread().getName());
+        demo.method1();
+    }).start();
+    new Thread(() -> {
+        System.out.println(Thread.currentThread().getName());
+        demo.method2();
+    }).start();
+}
+```
+上面这段代码中，1线程调用 method1，在 method1 中调用了method2 ；2线程调用method2 。 如果method1中调用method2时如果无可重入性，那么该线程就需要与其他线程竞争执行 method2，就需要竞争锁，而出现阻塞；而锁具有可重入性时，该线程会直接获得锁(相当于最优先)，那就可以直接执行method2而不用阻塞。
+
+### ReentrantLock-公平锁、非公平锁
+synchronized是一个非公平锁，因为他无法确认按照线程申请锁的顺序使得线程获得锁。      
+ReentrantLock既可以做非公平锁，也可以做公平锁。它有两个构造函数`ReentrantLock()`和`ReentrantLock(boolean fair)`，后者可以创建公平锁，以使线程按照申请锁的顺序获得锁。
+
+### 与Condition结合进行线程的调度
+通常线程间通信依靠的是Thread的wait()、notify()、notifyAll()等来处理，wait()可以挂起当前线程,从而将当前线程竞争到的时间片让出给其他的线程，使用 notify()、notifyAll()来唤起某个或者全部挂起的线程，以让挂起的线程重新竞争时间片，然后继续执行。
+
+Condition也实现了同样的功能(await()、signal()、signalAll())，并扩展出了一些新的功能。和Thread提供的方法相比，Thread挂起线程使用的是一个内置队列，所有挂起的线程都在该队列中等待；而Condition相当于替换了这个内置队列，可以有多个队列，所以在使用上更加的灵活。如下代码的使用：
+```
+public class DemoCondition1 {
+
+    private Lock lock = new ReentrantLock();
+    private Condition condition1 = lock.newCondition();
+    private Condition condition2 = lock.newCondition();
+
+    public void method1() {
+        lock.lock();
+        try {
+            System.out.println("method1 entry");
+            TimeUnit.MILLISECONDS.sleep(2000);
+
+            System.out.println("method1 当前线程挂起");
+            condition1.await();
+
+            System.out.println("method1 继续执行");
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } finally {
+            lock.unlock();
+        }
+
+    }
+
+    public void method2() {
+        lock.lock();
+        try {
+            System.out.println("method2 entry");
+            TimeUnit.MILLISECONDS.sleep(2000);
+
+            System.out.println("method2 当前挂起");
+            condition1.await();
+
+            System.out.println("method2 继续执行");
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } finally {
+            lock.unlock();
+        }
+
+    }
+
+    public void method3() {
+        lock.lock();
+        try {
+            System.out.println("method3 entry");
+            TimeUnit.MILLISECONDS.sleep(2000);
+
+            System.out.println("method3 当前挂起");
+            condition2.await();
+
+            System.out.println("method3 继续执行");
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } finally {
+            lock.unlock();
+        }
+
+    }
+
+    public void method4() {
+        lock.lock();
+        try {
+            System.out.println("method4 entry");
+            TimeUnit.MILLISECONDS.sleep(2000);
+
+            System.out.println("method4 当前唤醒c1所有");
+            condition1.signalAll();
+
+            System.out.println("method4 继续执行");
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } finally {
+            lock.unlock();
+        }
+
+    }
+
+    public void method5() {
+        lock.lock();
+        try {
+            System.out.println("method5 entry");
+            TimeUnit.MILLISECONDS.sleep(2000);
+
+            System.out.println("method5 当前唤醒c2");
+            condition2.signal();
+
+            System.out.println("method5 继续执行");
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } finally {
+            lock.unlock();
+        }
+
+    }
+
+    public static void main(String[] args) {
+        final DemoCondition1 demo = new DemoCondition1();
+        new Thread(demo::method1).start();
+        new Thread(demo::method2).start();
+        new Thread(demo::method3).start();
+        new Thread(demo::method4).start();
+        new Thread(demo::method5).start();
+    }
+}
+```
+
+## ReadWriteLock
+`ReadWriteLock`的实现是`ReentrantReadWriteLock`，通常也是使用这个类。能够看出来这是个读写锁。
+
+这个锁是既是一个独享锁，也是一个共享锁。在`ReadWriteLock`中有两个方法：
+```
+Lock readLock();
+Lock writeLock();
+```
+因为读和写不同，读是不会改变数据的，所以在读的时候并不会产生线程安全的问题。所以读是可以支持多个线程同时操作。这个相当于对锁做了一个更细粒度的优化。
+```
+public class DemoReadWriteLock {
+
+    private ReadWriteLock lock = new ReentrantReadWriteLock();
+    private Lock readLock = lock.readLock();
+    private Lock writeLock = lock.writeLock();
+
+    public void method1() {
+        readLock.lock();
+        try {
+            System.out.println("method1 enter");
+            TimeUnit.MILLISECONDS.sleep(2000);
+            System.out.println("method1 exit");
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } finally {
+            readLock.unlock();
+        }
+    }
+
+    public void method2() {
+        writeLock.lock();
+        try {
+            System.out.println("method2 enter");
+            TimeUnit.MILLISECONDS.sleep(2000);
+            System.out.println("method2 exit");
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } finally {
+            writeLock.unlock();
+        }
+    }
+
+    public static void main(String[] args) {
+        final DemoReadWriteLock demo = new DemoReadWriteLock();
+        new Thread(demo::method1).start();
+        new Thread(demo::method1).start();
+
+        new Thread(demo::method2).start();
+        new Thread(demo::method2).start();
+    }
+```
+以上的使用中method1使用了ReadLock，method2使用了WriteLock，所以method1可以看到多个线程同时执行，也就是说ReadLock是可以让多个线程同时获得。
+
+## 其它常用的方法
+```
+// 尝试获取锁,立即返回获取结果 轮询锁
+public boolean tryLock();
+
+//尝试获取锁,最多等待 timeout 时长 超时锁
+public boolean tryLock(long timeout, TimeUnit unit);
+
+//可中断锁,调用线程 interrupt 方法,则锁方法抛出 InterruptedException  中断锁
+public void lockInterruptibly();
+
+```

@@ -10,6 +10,7 @@
 - [String的不可变性](#string的不可变性)
 - [除了String有常量池，其它8种基本类型的对象池](#除了string有常量池其它8种基本类型的对象池)
 - [synchronized关键字](#synchronized关键字)
+  - [synchronized的实现原理简单描述](#synchronized的实现原理简单描述)
 - [全局变量、成员变量、局部变量](#全局变量成员变量局部变量)
 - [创建对象的几种方式](#创建对象的几种方式)
 - [String的拼接，使用`+`还是StringBuilder或者StringBuffer](#string的拼接使用还是stringbuilder或者stringbuffer)
@@ -306,6 +307,9 @@ new Thread(() -> {
 间隔5s调用
 
 以上test3()同test2()，test4()同test1()，区别的地方在于一个同步执行的内容是整个方法内容，一个是方法中的代码块。
+
+## synchronized的实现原理简单描述
+在synchronized修饰的代码块或者方法，编译后的字节码中方法的访问标记多了一个ACC_SYNCHRONIZED，该标记表示，进入该方法时，JVM需要进行monitorenter操作，退出该方法时，无论是否正常返回，JVM均需要进行monitorexit操作。当执行monitorenter时，如果目标对象的monitor计数器为0，表示此对象没有被任何其他对象所持有。此时，JVM会将该锁对象的持有线程设置为当前线程，并且将计数器+1；如果目标锁对象的计数器不为0，判断锁对象的持有线程是否是当前线程，如果是，再次将计数器+1（锁的可重入性）。如果锁对象的持有线程不是当前线程，当前线程需要等待，直至持有线程释放锁。当执行monitorexit时，JVM会将锁对象的计数器-1，当计数器值减为0时，代表该锁对象已经被释放。
 
 # 全局变量、成员变量、局部变量
 ||存储区域|生命周期|作用域|
