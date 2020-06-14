@@ -400,10 +400,10 @@ Execute Object Query Language (OQL) query
 ```
 一般查看堆异常情况主要看这个两个部分：
 Show instance counts for all classes (excluding platform)，平台外的所有对象信息。如下图：
-![](/ASSET/jvm-jhat-excluding-paltform.png)
+![](http://sunyanping.gitee.io/it-keep/ASSET/jvm-jhat-excluding-paltform.png)
 
 Show heap histogram 以树状图形式展示堆情况。如下图：
-![](/ASSET/jvm-jhat-heap-histogram.png)
+![](http://sunyanping.gitee.io/it-keep/ASSET/jvm-jhat-heap-histogram.png)
 
 具体排查时需要结合代码，观察是否大量应该被回收的对象在一直被引用或者是否有占用内存特别大的对象无法被回收。
 
