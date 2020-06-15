@@ -17,6 +17,9 @@
   - [**补充：**  CAS机制](#补充--cas机制)
 - [Stack（后进先出）（目前不建议使用）](#stack后进先出目前不建议使用)
 - [Queue(先进先出)（也不建议使用）](#queue先进先出也不建议使用)
+- [HashMap详解](#hashmap详解)
+  - [HashMap的存储结构](#hashmap的存储结构)
+  - [HashMap的扩容机制](#hashmap的扩容机制)
 
 <!-- /TOC -->
 
@@ -210,6 +213,170 @@ public interface Queue<E> extends Collection<E> {
 ```
 需要注意的是，由于队列中poll和peek操作以Null为标志，所以队列中添加Null元素是不合法的。
 
+# HashMap详解
+在Java7中和Java8中HashMap的底层发生了一定的变化，因为现在Java8是绝对的主流，所以在这里整理一下Java8中的HashMap的实现机制。
+
+## HashMap的存储结构
+从结构实现来讲，HashMap是**数组+链表+红黑树**（红黑树是从Java8开始设计的）。       
+![HashMap底层存储结构](http://sunyanping.gitee.io/it-keep/ASSET/HashMap底层存储结构.png)
+
+1. Node是什么
+
+HashMap类中有一个非常重要的字段，就是Node[] table，即哈希桶数组，明显它是一个Node的数组
+```
+static class Node<K,V> implements Map.Entry<K,V> {
+    final int hash;    //用来定位数组索引位置
+    final K key;
+    V value;
+    Node<K,V> next;   //链表的下一个node
+
+    Node(int hash, K key, V value, Node<K,V> next) { ... }
+    public final K getKey(){ ... }
+    public final V getValue() { ... }
+    public final String toString() { ... }
+    public final int hashCode() { ... }
+    public final V setValue(V newValue) { ... }
+    public final boolean equals(Object o) { ... }
+}
+```
+Node是HashMap的一个内部类，实现了Map.Entry接口，本质就是一个映射(键值对)。上图中的每个黑色圆点就是一个Node对象。
+
+2. Hash桶（哈希表）     
+
+HashMap就是使用哈希表来存储的。为了解决hash冲突，Java的HashMap使用了**链地址法**，链地址法就是使用**数组+链表**的方式来存储数据。也就是在数据的每一个元素上都对应一个链表数据结构，当数据被hash后，得到数组下标，需要把数据存放在对应的下标位置，但是该下标已经存放了对应的数据，然后就需要通过`equals()`方法来比较key是否相同，若key不相同，则需要将该数据存放到这个链表结构中。
+
+为什么不同数据hash算法得到的下标会出现相同结构，这是因为hash算法本身的原因。这种情况称为**hash碰撞**。
+
+如果哈希桶数组很大，即使较差的Hash算法也会比较分散，如果哈希桶数组数组很小，即使好的Hash算法也会出现较多碰撞，所以就需要在空间成本和时间成本之间权衡，其实就是在根据实际情况确定哈希桶数组（Node[] table）的大小，并在此基础上设计好的hash算法减少Hash碰撞。**所以好的Hash算法和扩容机制至关重要**。
+
+3. HashMap的初始化数据和扩容
+
+这里展示几个HashMap中的字段：
+```
+transient int size：表示当前HashMap包含的键值对数量
+transient int modCount：表示当前HashMap修改次数
+int threshold：表示当前HashMap能够承受的最多的键值对数量，一旦超过这个数量HashMap就会进行扩容
+final float loadFactor：负载因子，用于扩容
+static final int DEFAULT_INITIAL_CAPACITY = 1 << 4：默认的table初始容量
+static final float DEFAULT_LOAD_FACTOR = 0.75f：默认的负载因子
+static final int TREEIFY_THRESHOLD = 8: 链表长度大于等于该参数转红黑树
+static final int UNTREEIFY_THRESHOLD = 6: 当树的节点数小于等于该参数转成链表
+```
+首先，Node[] table的初始化长度length(默认值是16)，Load factor为负载因子(默认值是0.75)，threshold是HashMap所能容纳的最大数据量的Node(键值对)个数。threshold = length * Load factor。也就是说，在数组定义好长度之后，负载因子越大，所能容纳的键值对个数越多。
+
+结合负载因子的定义公式可知，threshold就是在此Load factor和length(数组长度)对应下允许的最大元素数目，超过这个数目就重新resize(扩容)，扩容后的HashMap容量是之前容量的两倍。默认的**负载因子0.75是对空间和时间效率的一个平衡选择**，建议大家不要修改，除非在时间和空间比较特殊的情况下，比如内存空间很多而又对时间效率要求很高，可以降低负载因子Load factor的值；相反，如果内存空间紧张而对时间效率要求不高，可以增加负载因子loadFactor的值，这个值可以大于1。
+
+size这个字段其实很好理解，就是HashMap中实际存在的键值对数量。注意和table的长度length、容纳最大键值对数量threshold的区别。而modCount字段主要用来记录HashMap内部结构发生变化的次数。强调一点，内部结构发生变化指的是结构发生变化，例如put新键值对，但是某个key对应的value值被覆盖不属于结构变化。
+
+在HashMap中，哈希桶数组table的长度length大小必须为2的n次方(一定是合数)，这是一种非常规的设计。HashMap采用这种非常规设计，主要是为了在取模和扩容时做优化，同时减少冲突，HashMap定位哈希桶索引位置时，也加入了高位参与运算的过程。这里存在一个问题，即使负载因子和Hash算法设计的再合理，也免不了会出现拉链过长的情况，一旦出现拉链过长，则会严重影响HashMap的性能。于是，在JDK1.8版本中，对数据结构做了进一步的优化，引入了红黑树。而当链表长度太长（默认超过8）时，链表就转换为红黑树，利用红黑树快速增删改查的特点提高HashMap的性能。
+
+
+## HashMap的扩容机制
+HashMap对象内部的数组无法装载更多的元素时，对象就需要扩大数组的长度，以便能装入更多的元素。当然Java里的数组是无法自动扩容的，方法是使用一个新的数组代替已有的容量小的数组。
+
+HashMap扩容可以分为3种情况：         
+1. 使用默认构造方法初始化HashMap，在一开始初始化的时候会返回一个空的table，并且`thershold`为0，因此第一次扩容的容量为默认值`DEFAULT_INITIAL_CAPACITY`也就是16。
+2. 使用指定初始容量的构造方法初始化HashMap，那么第一次扩容的容量就是指定的初始容量。
+3. HashMap不是第一次扩容，如果HashMap已经扩容过的话，那么每次扩容table的容量都是原有的两倍。
+
+**这边也可以引申到一个问题HashMap是先插入还是先扩容：HashMap初始化后首次插入数据时，先发生resize扩容再插入数据，之后每当插入的数据个数达到threshold时就会发生resize，此时是先插入数据再resize。**
+
+**扩容机制核心方法是`Node<K,V>[] resize()`**，这里展示一下resize()的具体实现。          
+```
+final Node<K,V>[] resize() {
+    Node<K,V>[] oldTab = table;//首次初始化后table为Null
+    int oldCap = (oldTab == null) ? 0 : oldTab.length;
+    int oldThr = threshold;//默认构造器的情况下为0
+    int newCap, newThr = 0;
+    if (oldCap > 0) {//table扩容过
+            //当前table容量大于最大值得时候返回当前table
+         if (oldCap >= MAXIMUM_CAPACITY) {
+            threshold = Integer.MAX_VALUE;
+            return oldTab;
+        }
+        else if ((newCap = oldCap << 1) < MAXIMUM_CAPACITY &&
+                    oldCap >= DEFAULT_INITIAL_CAPACITY)
+        //table的容量乘以2，threshold的值也乘以2           
+        newThr = oldThr << 1; // double threshold
+    }
+    else if (oldThr > 0) // initial capacity was placed in threshold
+    //使用带有初始容量的构造器时，table容量为初始化得到的threshold
+     newCap = oldThr;
+    else {  //默认构造器下进行扩容  
+            // zero initial threshold signifies using defaults
+        newCap = DEFAULT_INITIAL_CAPACITY;
+        newThr = (int)(DEFAULT_LOAD_FACTOR * DEFAULT_INITIAL_CAPACITY);
+    }
+    if (newThr == 0) {
+    //使用带有初始容量的构造器在此处进行扩容
+         float ft = (float)newCap * loadFactor;
+        newThr = (newCap < MAXIMUM_CAPACITY && ft < (float)MAXIMUM_CAPACITY ?
+                    (int)ft : Integer.MAX_VALUE);
+    }
+    threshold = newThr;
+    @SuppressWarnings({"rawtypes","unchecked"})
+    Node<K,V>[] newTab = (Node<K,V>[])new Node[newCap];
+    table = newTab;
+    if (oldTab != null) {
+        for (int j = 0; j < oldCap; ++j) {
+            HashMap.Node<K,V> e;
+            if ((e = oldTab[j]) != null) {
+                // help gc
+                oldTab[j] = null;
+                if (e.next == null)
+                    // 当前index没有发生hash冲突，直接对2取模，即移位运算hash &（2^n -1）
+                    // 扩容都是按照2的幂次方扩容，因此newCap = 2^n
+                    newTab[e.hash & (newCap - 1)] = e;
+                else if (e instanceof HashMap.TreeNode)
+                    // 当前index对应的节点为红黑树，这里篇幅比较长且需要了解其数据结构跟算法，因此不进行详解，当树的高度小于等于UNTREEIFY_THRESHOLD则转成链表
+                    ((HashMap.TreeNode<K,V>)e).split(this, newTab, j, oldCap);
+                else { // preserve order
+                    // 把当前index对应的链表分成两个链表，减少扩容的迁移量
+                    HashMap.Node<K,V> loHead = null, loTail = null;
+                    HashMap.Node<K,V> hiHead = null, hiTail = null;
+                    HashMap.Node<K,V> next;
+                    do {
+                        next = e.next;
+                        if ((e.hash & oldCap) == 0) {
+                            // 扩容后不需要移动的链表
+                            if (loTail == null)
+                                loHead = e;
+                            else
+                                loTail.next = e;
+                            loTail = e;
+                        }
+                        else {
+                            // 扩容后需要移动的链表
+                            if (hiTail == null)
+                                hiHead = e;
+                            else
+                                hiTail.next = e;
+                            hiTail = e;
+                        }
+                    } while ((e = next) != null);
+                    if (loTail != null) {
+                        // help gc
+                        loTail.next = null;
+                        newTab[j] = loHead;
+                    }
+                    if (hiTail != null) {
+                        // help gc
+                        hiTail.next = null;
+                        // 扩容长度为当前index位置+旧的容量
+                        newTab[j + oldCap] = hiHead;
+                    }
+                }
+            }
+        }
+    }
+    return newTab;
+}
+```
 
 
 
+
+
+
+
+HashMap对象内部的数组无法装载更多的元素时，对象就需要扩大数组的长度，以便能装入更多的元素。当然Java里的数组是无法自动扩容的，方法是使用一个新的数组代替已有的容量小的数组。
