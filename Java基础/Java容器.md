@@ -222,7 +222,7 @@ public interface Queue<E> extends Collection<E> {
 
 1. Node是什么
 
-HashMap类中有一个非常重要的字段，就是Node[] table，即哈希桶数组，明显它是一个Node的数组
+HashMap类中有一个非常重要的字段，就是`Node[] table`，即哈希桶数组，明显它是一个Node的数组
 ```
 static class Node<K,V> implements Map.Entry<K,V> {
     final int hash;    //用来定位数组索引位置
