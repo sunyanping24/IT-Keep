@@ -84,11 +84,7 @@
 * [SpringBoot常见面试题](Framework/SpringBoot/SpringBoot常见面试题.md)
 
 ## SpringCloud
-* [Eureka常见问题](Framework/SpringCloud/Eureka常见问题.md)
-* [Zuul常见问题](Framework/SpringCloud/Zuul常见问题.md)
-* [Gateway常见问题](Framework/SpringCloud/Gateway常见问题.md)
-* [Ribbon常见问题](Framework/SpringCloud/Ribbon常见问题.md)
-* [Feign常见问题](Framework/SpringCloud/Feign常见问题.md)
+* [SpringCloud常见面试题](Framework/SpringCloud/SpringCloud常见面试题.md)
 
 ## Netty
 * [快速创建一个netty服务端](Framework/Netty/快速创建一个netty服务端.md)
