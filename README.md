@@ -53,7 +53,7 @@
 * [MySQL高性能优化规范建议](Database/MySQL/MySQL高性能优化规范建议.md)
 * [Mysql服务常见问题处理](Database/MySQL/Mysql服务常见问题处理.md)
 ## Redis
-* [Redis](Database/Redis/Redis.md)
+* [Redis基础知识](Database/Redis/Redis基础知识.md)
 * [Redis的单线程模型](Database/Redis/Redis的单线程模型.md)
 * [Redis的三种集群模式](Database/Redis/Redis的三种集群模式.md)
 

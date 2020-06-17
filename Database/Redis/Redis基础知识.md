@@ -8,6 +8,7 @@
   - [RDB 持久化(快照持久化)](#rdb-持久化快照持久化)
   - [AOF 持久化](#aof-持久化)
   - [Redis 4.0 对持久化机制的优化](#redis-40-对持久化机制的优化)
+- [Redis hotKey的检测](#redis-hotkey的检测)
 
 <!-- /TOC -->
 
@@ -79,6 +80,35 @@ appendfsync no  # 让操作系统来决定何时同步
 Redis 4.0 开始支持 RDB 和 AOF 的混合持久化（默认关闭，可以通过配置项 aof-use-rdb-preamble 开启）。
 
 如果把混合持久化打开，AOF 重写的时候就直接把 RDB 的内容写到 AOF 文件开头。这样做的好处是可以结合 RDB 和 AOF 的优点, 快速加载同时避免丢失过多的数据。当然缺点也是有的， AOF 里面的 RDB 部分就是压缩格式不再是 AOF 格式，可读性较差。
+
+# Redis hotKey的检测
+redis 4.0.3提供了redis-cli的热点key发现功能，执行redis-cli时加上–hotkeys选项即可，示例如下：
+```
+# Scanning the entire keyspace to find hot keys as well as
+# average sizes per key type.  You can use -i 0.1 to sleep 0.1 sec
+# per 100 SCAN commands (not usually needed).
+ 
+[00.00%] Hot key 'counter:000000000002' found so far with counter 87
+[00.00%] Hot key 'key:000000000001' found so far with counter 254
+[00.00%] Hot key 'mylist' found so far with counter 107
+[00.00%] Hot key 'key:000000000000' found so far with counter 254
+[45.45%] Hot key 'counter:000000000001' found so far with counter 87
+[45.45%] Hot key 'key:000000000002' found so far with counter 254
+[45.45%] Hot key 'myset' found so far with counter 64
+[45.45%] Hot key 'counter:000000000000' found so far with counter 93
+ 
+-------- summary -------
+ 
+Sampled 22 keys in the keyspace!
+hot key found with counter: 254    keyname: key:000000000001
+hot key found with counter: 254    keyname: key:000000000000
+hot key found with counter: 254    keyname: key:000000000002
+hot key found with counter: 107    keyname: mylist
+hot key found with counter: 93    keyname: counter:000000000000
+hot key found with counter: 87    keyname: counter:000000000002
+hot key found with counter: 87    keyname: counter:000000000001
+hot key found with counter: 64    keyname: myset
+```
 
 
 
