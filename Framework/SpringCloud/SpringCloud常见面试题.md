@@ -50,8 +50,8 @@ Hystrix作为熔断流量控制，旨在通过熔断机制控制服务和第三�
 
 
 ## 三者之间的联系
-![](/ASSET/从一个请求看Feign-Hystrix-Ribbon三者之间的联系.png)
-![](/ASSET/从一个请求看Feign-Hystrix-Ribbon三者之间的联系2.png)
+![](http://sunyanping.gitee.io/it-keep/ASSET/从一个请求看Feign-Hystrix-Ribbon三者之间的联系.png)
+![](http://sunyanping.gitee.io/it-keep/ASSET/从一个请求看Feign-Hystrix-Ribbon三者之间的联系2.png)
 
 从上面这2个图基本能够看出这三者之间的联系，这三者实际上在实现时之间就是存在紧密结合的，在实际的使用中，主要关注的就是调用超时在这三者之间的关系，因为他们都和调用超时存在关系。
 
