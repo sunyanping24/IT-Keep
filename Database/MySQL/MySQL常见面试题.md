@@ -138,7 +138,7 @@ MySQL中的字符序名称遵从命名惯例：以字符序对应的字符集名
 
 # 使用EXPLAIN关键字分析SQL执行计划
 SQL执行计划查看一般是在查询语句前加上关键字`explain`，执行结果中可以分析SQL时如何执行的。
-![](/ASSET/EXPLAIN分析SQL执行计划.png)    
+![](http://sunyanping.gitee.io/it-keep/ASSET/EXPLAIN分析SQL执行计划.png)    
 
 - `id`： id值相同的，执行顺序自上而下；id值不同的，id值越大优先级越高。
 
