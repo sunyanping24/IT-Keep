@@ -71,11 +71,14 @@ Non-default VM flags: -XX:-BytecodeVerificationLocal -XX:-BytecodeVerificationRe
 Command line:  -XX:TieredStopAtLevel=1 -Xverify:none -Dspring.output.ansi.enabled=always -Dcom.sun.management.jmxremote -Dspring.jmx.enabled=true -Dspring.liveBeansView.mbeanDomain -Dspring.application.admin.enabled=true -javaagent:D:\Program Files\JetBrains\IntelliJ IDEA 2019.3.3\lib\idea_rt.jar=58327:D:\Program Files\JetBrains\IntelliJ IDEA 2019.3.3\bin -Dfile.encoding=UTF-8
 ```
 
-2. `jinfo -flags [option] pid `  查看java进程指定jvm运行参数
+2. `jinfo -flags [option] pid`   
+  
+查看java进程指定jvm运行参数
 ```
 $ jinfo -flag InitialHeapSize 9736
 -XX:InitialHeapSize=268435456
 ```
+
 
 # jstat
 jstat(JVM statistics Monitoring)是用于监视虚拟机运行时状态信息的命令，它可以显示出虚拟机进程中的类装载、内存、垃圾收集、JIT编译等运行数据。
@@ -328,6 +331,7 @@ $ jmap -heap 28920
 可以很清楚的看到Java堆中各个区域目前的情况。
 
 4. `-histo`：打印堆的对象统计，包括对象数、内存大小等等 （因为在dump:live前会进行full gc，如果带上live则只统计活对象，因此不加live的堆大小要大于加live堆的大小 ）
+
 ```
 $ jmap -histo:live 28920 | more
  num     #instances         #bytes  class name
