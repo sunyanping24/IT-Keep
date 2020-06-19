@@ -25,6 +25,7 @@
   - [抽象类有构造方法为什么不能实例化？为什么有构造方法却不能被实例化？](#抽象类有构造方法为什么不能实例化为什么有构造方法却不能被实例化)
 - [堆外内存](#堆外内存)
 - [自定义注解](#自定义注解)
+- [Java的反射机制](#java的反射机制)
 
 <!-- /TOC -->
 
@@ -472,3 +473,73 @@ Java注解也是一个`.java`文件，由`@interface`关键字来修饰的一个
 注解的内容的语法格式： `数据类型 属性名() default 默认值`。
 
 自定义注解在实践中常用的场景：AOP场景、权限控制、统一处理某类业务...
+
+# Java的反射机制
+> 有这么一句话：Java中一切皆对象
+
+Java的三大特性之一：封装，封装是一切的基础，把所有的东西都抽象化，封装成一个个的类对象。包含封装成的这些类对象也不例外，这些类对象在Java中也被抽象化成`Class`对象，在`Class`中包含了：`Field`(抽象的是类属性)、`Method`(抽象的是类方法)、`Constractor`(抽象的是类构造方法)。同时也提供了这些对象的操作方法，包含修改、执行等。类对象最终的执行是要加载在内存中的，这些本来是一些静态的东西，但是有了`Class`对象之后，这些本来是静态的东西也可以被在执行时进行动态的修改。这中手段称之为反射(`reflection`)。
+
+和反射操作相关的API放在`java.lang.reflect`包下，通常使用的一些API如下：
+- **获取类(Class)对象**
+```
+Class clazz = Class.forName("xxx.ClassName"); 
+```
+
+- **构造器(Constactor)相关**
+```
+Class c = Class.forName("cn.qidd.Person");
+// 获取到它的所有构造方法
+// 1-获取到所有公共构造方法，返回数组
+Constructor[] constructors = c.getConstructors();
+System.out.println(Arrays.toString(constructors));
+// 2-获取到所有构造方法，返回数组
+Constructor[] declaredConstructors = c.getDeclaredConstructors();
+System.out.println(Arrays.toString(declaredConstructors));
+// 3-获取到公有构造方法，返回构造器对象。根据参数类型指定构造器。
+// Constructor getConstructor(Class<?> ...parameterType)
+Constructor constructor = c.getConstructor(String.class, int.class);
+System.out.println(constructor);
+// 4-通过获取到的构造方法，创建类实例
+Object obj = constructor.newInstance("张三", 18);
+System.out.println(obj);
+// 5-获取到私有构造方法返回构造器。并创建类实例。
+Constructor con = c.getDeclaredConstructor(String.class);
+con.setAccessible(true); // 当不设置时非法异常，此处意思是指示使用Java反射的对象在使用时取消Java语言的访问权限
+Object o1 = con.newInstance("张三");
+System.out.println(o1);
+```
+
+- **属性(Field)相关**
+```
+Class c = Class.forName("cn.qidd.Person");
+Field[] fields = c.getFields(); // 获取到所有公共成员变量
+Field[] fields1 = c.getDeclaredFields(); // 获取到所有成员变量
+Field f = c.getField("address"); // 获取某公共成员变量
+Field f2 = c.getDeclaredField("name"); // 获取任意一个成员变量
+Constructor constructor = c.getConstructor();
+Object o = constructor.newInstance();
+f2.setAccessible(true);
+f2.set(o, "张三");
+System.out.println(o);
+```
+
+- **方法(Method)相关**
+```
+Class c = Class.forName("cn.qidd.Person");
+// 获取所有公共的方法（将他的父类的公共的方法也拿到）
+Method[] methods = c.getMethods();
+// 获取所有的方法（只有自己的），包含私有的
+Method[] methods1 = c.getDeclaredMethods();
+// 获取单个方法并使用（public）
+Constructor con = c.getConstructor();
+Object o = con.newInstance();
+
+Method method = c.getMethod("show");
+method.setAccessible(true);
+Object invoke = method.invoke(o); // 调用o的show方法
+// 获取单个方法（private修饰）
+Method m = c.getDeclaredMethod("function",String.class);
+m.setAccessible(true);
+Object o1 = m.invoke(o, "孙艳平");
+System.out.println(o1);
+```
