@@ -9,7 +9,6 @@
   - [容器](#容器)
   - [仓库](#仓库)
 - [Docker的一些底层原理](#docker的一些底层原理)
-- [docker常用命令](#docker常用命令)
 
 <!-- /TOC -->
 # 什么是Docker
@@ -76,8 +75,6 @@ Docker 镜像（Image）是**一个特殊的文件系统**，包含了程序运�
 # Docker的一些底层原理
 对于docker的底层设计原理，这篇文章讲的详细清楚。这块的内容可以了解一下，若有需要使用到相关的知识时可以详细查阅资料。
 [https://draveness.me/docker](https://draveness.me/docker)
-
-# docker常用命令
 
 **参考文档**    
 闲的时候可以看看官方的文档：[https://docs.docker.com/](https://docs.docker.com/)  
