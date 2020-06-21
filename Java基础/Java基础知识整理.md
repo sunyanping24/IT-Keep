@@ -524,6 +524,7 @@ System.out.println(o);
 ```
 
 - **方法(Method)相关**
+
 ```
 Class c = Class.forName("cn.qidd.Person");
 // 获取所有公共的方法（将他的父类的公共的方法也拿到）
