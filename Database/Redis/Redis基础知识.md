@@ -17,6 +17,9 @@
   - [ZSET 有序集合](#zset-有序集合)
 - [Redis key的过期时间](#redis-key的过期时间)
   - [key的过期策略](#key的过期策略)
+- [Redis性能监控](#redis性能监控)
+  - [几个常用的性能指标整理](#几个常用的性能指标整理)
+  - [性能测试工具](#性能测试工具)
 
 <!-- /TOC -->
 
@@ -264,3 +267,38 @@ Redis默认每秒进行10次过期扫描：
 （3）如果超过25%的key过期，则重复第一步
 
 同时，为了保证不出现循环过度的情况，Redis还设置了扫描的时间上限，默认不会超过25ms。
+
+# Redis性能监控
+
+## 几个常用的性能指标整理
+Redis的性能指标的数据可以通过Redis自带的**redis-cli**来监控，`./redis-cli info`命令即可展示所有的redis相关的信息，能够从这些数据中分析得出想要的性能数据。
+
+1. **性能指标**     
+- **latency**：Redis响应一个请求的时间
+- **instantaneous_ops_per_sec**：平均每秒处理请求总数
+- **hi rate(calculated)**：缓存命中率（计算出来的）
+
+2. **内存指标**     
+- **used_memory**：已使用内存
+- **mem_fragmentation_ratio**：内存碎片率
+- **evicted_keys**：由于最大内存限制被移除的key的数量
+- **blocked_clients**：由于BLPOP,BRPOP,or BRPOPLPUSH而备阻塞的客户端
+
+3. **基本活动指标**   
+- **connected_clients**：客户端连接数
+- **conected_laves**：slave数量
+- **master_last_io_seconds_ago**：最近一次主从交互之后的秒数
+- **keyspace**：数据库中的key值总数
+
+4. **持久性指标**   
+- **rdb_last_save_time**：最后一次持久化保存磁盘的时间戳
+- **rdb_changes_sice_last_save**：自最后一次持久化以来数据库的更改数
+
+5. **错误指标**     
+- **rejected_connections**：由于达到maxclient限制而被拒绝的连接数
+- **keyspace_misses**：key值查找失败(没有命中)次数
+- **master_link_down_since_seconds**：主从断开的持续时间（以秒为单位)
+
+## 性能测试工具
+使用redis自带的性能测试工具：`./redis-benchmark -c 100 -n 5000`（100个连接，5000次请求对应的性能）
+
