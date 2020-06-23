@@ -9,6 +9,12 @@
   - [AOF 持久化](#aof-持久化)
   - [Redis 4.0 对持久化机制的优化](#redis-40-对持久化机制的优化)
 - [Redis hotKey的检测](#redis-hotkey的检测)
+- [Redis的数据结构及常用命令](#redis的数据结构及常用命令)
+  - [String 字符串](#string-字符串)
+  - [List 列表](#list-列表)
+  - [Hash 哈希](#hash-哈希)
+  - [SET 集合](#set-集合)
+  - [ZSET 有序集合](#zset-有序集合)
 
 <!-- /TOC -->
 
@@ -110,5 +116,119 @@ hot key found with counter: 87    keyname: counter:000000000001
 hot key found with counter: 64    keyname: myset
 ```
 
+# Redis的数据结构及常用命令
+
+- String 字符串     
+String数据结构是简单的key-value类型，value其实不仅可以是String，也可以是数字。 常规key-value缓存应用。可以使用常规的统计。
+
+- List 列表     
+使用Lists结构，我们可以轻松地实现最新消息排行等功能。List的另一个应用就是消息队列，可以利用List的PUSH操作，将任务存在List中，然后工作线程再用POP操作将任务取出进行执行。Redis还提供了操作List中某一段的api，你可以直接查询，删除List中某一段的元素。 
+Redis的list是每个子元素都是String类型的双向链表，可以通过push和pop操作从列表的头部或者尾部添加或者删除元素，这样List即可以作为栈，也可以作为队列。
+
+- Hash 哈希       
+Redis hash是一个string类型的field和value的映射表，hash特别适合用于存储对象。 
+存储部分变更的数据，如用户信息等。
+
+- SET 集合      
+set就是一个集合，集合的概念就是一堆不重复值的组合。利用Redis提供的set数据结构，可以存储一些集合性的数据。set中的元素是没有顺序的。 
 
 
+- ZSET 集合     
+和set相比，sorted set增加了一个权重参数score，使得集合中的元素能够按score进行有序排列，比如一个存储全班同学成绩的sorted set，其集合value可以是同学的学号，而score就可以是其考试得分，这样在数据插入集合的时候，就已经进行了天然的排序。可以用sorted set来做带权重的队列，比如普通消息的score为1，重要消息的score为2，然后工作线程可以选择按score的倒序来获取工作任务。让重要的任务优先执行。
+
+
+*这里总结的主要是使用redis-cli客户端访问数据的一些命令*
+```
+redis-cli -h 127.0.0.1 -p 6379
+```
+
+Redis常用命令: [http://redisdoc.com/index.html](http://redisdoc.com/index.html)
+## String 字符串
+
+```
+SET <key> <value>   // 添加/更新key值为value
+GET <key>   // 获取key的value
+SET <key> <value> [EX seconds] [PX milliseconds] [NX|XX]    // EX-设置键过期时间(s)，PX-设置键过期时间(ms)，NX-只有键存在时才操作，XX-只有键不存在时才操作
+MSET <key> <value> [key value ...]  // 批量设置
+MGET <key> [<key>...]     // 批量获取
+GETSET <key> <value>    // 将给定key的值设为value，并返回旧值
+INCR <key>    // 将key存储的数字加1。值必须是数字类型，否则会报错；如果key不存在，则会初始化key的值为0
+DECR <key>    // 将key存储的数字减1
+INCRBY <key>  <increment>   // 将key的值增加指定的增量
+DECRBY <key>  <decrement>   // 将key的值减去指定的增量
+APPEND <key> <value>    // 如果 key 已经存在并且是一个字符串， APPEND 命令将 value 追加到 key 原来的值的末尾。
+STRLEN <key>    // 返回 key 所储存的字符串值的长度。
+```
+
+## List 列表
+List是一个字符串列表，Left/Right都可以插入元素。如果key不存在，创建列表；如果key存在，列表中添加内容；如果列表内容全部移除，则key自动删除。无论是头尾插入元素都非常快，中间插入元素效率略低。
+
+```
+LPUSH <key> <value ...>   // 先进后出，在列表头部插入元素
+RPUSH <key> <value ...>     // 先进先出，在列表尾部插入元素
+LRANGE <key> <index1> <index2>    // 根据索引范围获取列表中的元素，从头部到尾部0~n，从尾部到头部 -1 ~ -n，比如：LRANGE list01 0 -1可以取出所有的列表元素
+LPOP <key>    // 移除并返回key列表的头元素
+RPOP <key>    // 移除并返回key列表的尾部元素
+LINDEX <key> <index>   // 根据索引取出元素，从头部到尾部0~n，从尾部到头部 -1 ~ -n
+LLEN <key>    // 链表的长度
+LREM <key> <n> <value>    // 删除key列表中n个value，从头向尾
+LTRIM <key> <index>   // 根据索引删除指定元素
+RPOPLPUSH <key1> <key2>   // key1列表的尾部元素出栈，并添加到key2列表的头部
+LSET <key> <index> <value>    // 替换key列表index位置的value
+```
+
+## Hash 哈希
+![Redis的Hash表](http://sunyanping.gitee.io/it-keep/ASSET/Redis的Hash表.png)
+Redis hash 是一个 string 类型的 field 和 value 的映射表，hash 特别适合用于存储对象。
+
+Hash的存储方式：    
+键值key
+字段1 字段值
+字段2 字段值
+
+Hash存储可以直接看作对象的存储，key为对象名，对象里有很多的属性(字段)。
+
+```
+HSET <key> <field> <value>    // key的hash表中添加域field并设置值value;若key不存在则创建;若field存在则更新
+HGET <key> <field>    // 获取key的hash表中域field的value
+HDEL <key> [<field> ...]    // 删除key的hash表中一个或多个域field
+HEXISTS <key> <field>   // 判断key的hash表中field是否存在
+HGETALL <key>   // 获取key的hash表中所有的域和值
+HKEYS <key>   // 获取hash表中的所有域
+HLEN <key>    // 获取hash表中域的数量
+HMSET <key> <field1> <value1> <field2> <value2> ...   // 添加多个域和值到key的hash表中
+HMGET <key> <field1> <field2> ...   // 获取hash表中多个域的值
+HSETNX <key> <field> <value>  // 添加域和值到hash表中，当且仅当域 field 不存在
+HVALS <key>   // 获取hash表key中所有的域的值
+```
+
+## SET 集合
+包含字符串的无序集合，并且被包含的每个字符串都是独一无二、各不相同的	
+```
+SADD <key> <value> [value2]   // 向集合key中添加元素
+SCARD <key>   // 获取集合元素的数量
+SDIFF <key1> <key2>   // 获取key1中除去包含的key2中的元素的其他元素
+SDIFFSTORE <targetKeySet> <key1> <key2>   // 将上一个命令得到的结果存到指定的集合中，若集合已存在则覆盖
+SINTER <key1> [<key2>]    // 返回集合的交集
+SINTERSTORE <targetKeySet> <key1> <key2>  // 将上一个命令得到的结果存到指定的集合中，若集合已存在则覆盖
+SISMEMBER <key> <value>   // 判断集合中是否存在value
+SMEMBERS <key>    // 返回集合中所有的元素
+SMOVE <key1> <key2> <value> // 将元素value从key1集合移到key2集合
+```
+
+## ZSET 有序集合
+有序集合和集合一样也是string类型元素的集合,且不允许重复的成员。
+不同的是每个元素都会关联一个double类型的分数。redis正是通过分数来为集合中的成员进行从小到大的排序。
+有序集合的成员是唯一的,但分数(score)却可以重复。
+ 
+```
+ZADD <key1> <value> [value...]    // 向key集合中添加一个或多个元素
+ZCARD <key>   // 获取集合中元素的数量
+ZCOUNT <key> min max    // 计算在有序集合中指定区间分数的成员数
+ZINCRBY key <increment> <value> // 有序集合中对指定成员的分数加上增量 increment
+ZINTERSTORE <key1> <numkeys> <key> [key …]    // 计算给定的一个或多个有序集的交集并将结果集存储在新的有序集合 key 中,numkeys代表后面有几个key
+ZLEXCOUNT <key> min max     // 在有序集合中计算指定字典区间内成员数量
+ZRANGE <key> <index1> <index2>    // 获取key集合中下标指定范围内的元素
+ZRANGEBYSCORE <key> min max   // 获取分数区间内key集合中的元素
+ZREM <key> <value>    // 删除集合key中value元素，存在便返回1，不存在则返回0
+```
