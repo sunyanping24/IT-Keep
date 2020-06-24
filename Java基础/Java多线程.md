@@ -2,7 +2,9 @@
 
 - [计算机核心数和线程数的计算关系](#计算机核心数和线程数的计算关系)
 - [Java中创建异步任务的几种方法（创建线程的方法）](#java中创建异步任务的几种方法创建线程的方法)
-- [Thread中的`run()`和`start()`的区别](#thread中的run和start的区别)
+  - [继承Thread，创建线程](#继承thread创建线程)
+  - [创建线程池，线程池自己创建线程](#创建线程池线程池自己创建线程)
+- [Thread中的 run() 和 start() 的区别](#thread中的-run-和-start-的区别)
 - [线程的阻塞](#线程的阻塞)
 - [线程池](#线程池)
   - [Java中几种创建线程池的方法：](#java中几种创建线程池的方法)
@@ -10,15 +12,14 @@
   - [线程池都提供了`submit()`和`execute()`方法](#线程池都提供了submit和execute方法)
   - [ThreadPoolExecutor使用的阻塞队列](#threadpoolexecutor使用的阻塞队列)
 - [几种JDK提供的并发容器](#几种jdk提供的并发容器)
-  - [`ConcurrentHashMap`: 线程安全的HashMap](#concurrenthashmap-线程安全的hashmap)
-  - [`CopyOnWriteArrayList`](#copyonwritearraylist)
-  - [`ConcurrentLinkedQueue`](#concurrentlinkedqueue)
-  - [`BlockingQueue`（待实战中总结）](#blockingqueue待实战中总结)
-  - [`ConcurrentSkipListMap`（待实战中总结）](#concurrentskiplistmap待实战中总结)
+  - [ConcurrentHashMap: 线程安全的HashMap](#concurrenthashmap-线程安全的hashmap)
+  - [CopyOnWriteArrayList](#copyonwritearraylist)
+  - [ConcurrentLinkedQueue](#concurrentlinkedqueue)
+  - [BlockingQueue](#blockingqueue)
 - [ThreadLocal](#threadlocal)
   - [线程上下文和ThreadLocal](#线程上下文和threadlocal)
   - [ThreadLocal的内存泄漏问题](#threadlocal的内存泄漏问题)
-- [Java的4种引用类型（强、软、弱、虚）](#java的4种引用类型强软弱虚)
+- [补充：Java的4种引用类型（强、软、弱、虚）](#补充java的4种引用类型强软弱虚)
   - [强引用](#强引用)
   - [软引用](#软引用)
   - [弱引用](#弱引用)
@@ -31,6 +32,11 @@
     - [与Condition结合进行线程的调度](#与condition结合进行线程的调度)
   - [ReadWriteLock](#readwritelock)
   - [其它常用的方法](#其它常用的方法)
+- [Future、FutureTask、Callable、ComplatableFuture](#futurefuturetaskcallablecomplatablefuture)
+  - [Future](#future)
+  - [FutureTask](#futuretask)
+  - [Callable](#callable)
+  - [ComplatableFuture](#complatablefuture)
 
 <!-- /TOC -->
 
@@ -44,23 +50,24 @@
 当然这几公式里面的CPU都是按照1C1T来说的。
 
 # Java中创建异步任务的几种方法（创建线程的方法）
-- 实现`Runnable`
-Runnable是一个函数接口，其中只有一个`run()`函数
-- 继承`Thread`
+> 在网上能看到经常能看到类似的问题：      
+>问：Java中创建线程有几种方法。      
+>答：继承Thread类，或者实现Runnable。
+
+其实上面的这种回答我认为是不准确的。因为在Thread类中包含`run()`方法，继承了Thread类重写`run()`方法，`run()`就是具体的任务，再使用类似`new MyThread().start()`的方法就可以创建新线程并执行；但是实现Runnable时，重写`run()`方法，使用时需要使用`new Thread(new MyRunnable()).start()`类似的方法，这很明显就能看出来Runnable只是提供了一个任务的实现方法，并不能创建线程，再使用时还是需要使用`new Thread()`来创建线程，然后将MyRunnable()作为任务传递给这个创建的线程。所以我认为上面的说法并不准确。
+
+我认为在Java中创建线程的方式有两种：
+- 继承Thread，使用`new Thread()`的方法
+- 使用线程池，线程池内部自己去创建线程
+
+
+## 继承Thread，创建线程
 Thread是一个类，也是实现了`Runnable`，其中包含了很多方法。所以采用这中方式也是相对于增加了开销.
 - 使用线程池（一般在实际的开发中需要使用这种方式，方便对线程的统一管理）
 
 ```
 public static void main(String[] args) {
-    new Thread(new Thread1()).start();
     new Thread2().start();
-}
-
-static class Thread1 implements Runnable {
-    @Override
-    public void run() {
-        System.out.println("线程：" + Thread.currentThread().getName() + ", Thread1");
-    }
 }
 
 static class Thread2 extends Thread {
@@ -71,7 +78,55 @@ static class Thread2 extends Thread {
 }
 ```
 
-# Thread中的`run()`和`start()`的区别
+## 创建线程池，线程池自己创建线程
+```
+ExecutorService executors = Executors.newFixedThreadPool(2);
+```
+
+**这里也总结一下几种创建任务的方法**：      
+- 继承Thread，如上展示的方式；
+- 实现Runnable，代码如下；
+```
+static class Thread1 implements Runnable {
+    @Override
+    public void run() {
+        System.out.println("线程：" + Thread.currentThread().getName() + ", Thread1");
+    }
+}
+
+public static void main(String[] args) {
+    new Thread(new Thread1()).start();
+}
+```
+
+- 实现Callable      
+因为使用Thread和Runnable创建的任务，都是使用了`run()`方法，`run()`方法是一个没有返回值的方法，所以创建的任务不能方便的获取到结果。所以为了补足这个缺点，就增加了`Callable`类，可以使用`call()`方法创建一个有返回值的任务。
+```
+@FunctionalInterface
+public interface Callable<V> {
+    V call() throws Exception;
+}
+```
+
+示例：      
+```
+public class MyCallable implements Callable<Integer> {
+    @Override
+    public Integer call() throws Exception {
+        TimeUnit.MILLISECONDS.sleep(2000);
+        return 1;
+    }
+}
+
+public static void main(String[] args) throws Exception {
+    ExecutorService executors = Executors.newSingleThreadExecutor();
+    Future<Integer> submit = executors.submit(new MyCallable());
+    System.out.println(submit.get());
+    executors.shutdown();
+}
+```
+
+# Thread中的 run() 和 start() 的区别
 - `run()`: 只是在原线程中调用  
 - `start()`: 创建了一个新线程，并且`start()`中实现了`run()`,所以也会启动新创建的这个线程。
 
@@ -142,12 +197,12 @@ public static final ThreadPoolExecutor executor = new ThreadPoolExecutor(
 
 可以参考这篇文章: [https://blog.csdn.net/xiaojin21cen/article/details/87363143](https://blog.csdn.net/xiaojin21cen/article/details/87363143)
 
-**在使用无限队列的时候一定要注意,一般情况下一定要给无限队列设置一个队列可以容纳的值,否则线程数最多只能达到corePoolSize的值**
+**在使用无限队列的时候一定要注意,一般情况下一定要给无限队列设置一个队列可以容纳的值,否则当任务数大于核心线程数时，线程数最多也只能达到corePoolSize的值**
 
 # 几种JDK提供的并发容器
 `java.util.concurrent`包下的几个类的介绍：
-## `ConcurrentHashMap`: 线程安全的HashMap
-## `CopyOnWriteArrayList`
+## ConcurrentHashMap: 线程安全的HashMap
+## CopyOnWriteArrayList
 线程安全的List，**一般使用于读多写少**的并发环境中，若写频繁的情况下慎用，因为这个东西的底层实现原理的原因，性能可能并不如想象中的好。
 
 **使用案例中的坑**   
@@ -218,14 +273,22 @@ public E get(int index) {
 - **内存占用问题：** 毕竟每次执行写操作都要将原容器拷贝一份，数据量大时，对内存压力较大，可能会引起频繁GC；
 - **无法保证实时性：** Vector对于读写操作均加锁同步，可以保证读和写的强一致性。而CopyOnWriteArrayList由于其实现策略的原因，写和读分别作用在新老不同容器上，在写操作执行过程中，读不会阻塞但读取到的却是老容器的数据。
 
-## `ConcurrentLinkedQueue`
+## ConcurrentLinkedQueue
 直接参考这篇博客，我觉得总结得非常好：[https://blog.csdn.net/u013991521/article/details/53068549](https://blog.csdn.net/u013991521/article/details/53068549)
 
-## `BlockingQueue`（待实战中总结）
+## BlockingQueue
 阻塞队列的一个接口，通过链表、数组等方式实现了这个接口。表示阻塞队列，非常适合用于作为数据共享的通道。通常使用的比如`ArrayBlockingQueue`、`LinkedBlockingQueue`。
 
-## `ConcurrentSkipListMap`（待实战中总结）
-跳表的实现。这是一个 Map，使用跳表的数据结构进行快速查找。
+- ArrayBlockingQueue：规定大小的BlockingQueue，其构造必须指定大小。其所含的对象是FIFO顺序排序的。
+- LinkedBlockingQueue：大小不固定的BlockingQueue，若其构造时指定大小，生成的BlockingQueue有大小限制，不指定大小，其大小有Integer.MAX_VALUE来决定。其所含的对象是FIFO顺序排序的。
+- PriorityBlockingQueue：类似于LinkedBlockingQueue，但是其所含对象的排序不是FIFO，而是依据对象的自然顺序或者构造函数的Comparator决定。
+
+**有界队列/有限队列**           
+当使用有限的 maximumPoolSizes时，有界队列（如 ArrayBlockingQueue）有助于防止资源耗尽，但是可能较难调整和控制。队列大小和最大池大小可能需要相互折衷：使用大型队列和小型池可以最大限度地降低 CPU 使用率、操作系统资源和上下文切换开销，但是可能导致人工降低吞吐量。如果任务频繁阻塞（例如，如果它们是 I/O边界），则系统可能为超过您许可的更多线程安排时间。使用小型队列通常要求较大的池大小，CPU使用率较高，但是可能遇到不可接受的调度开销，这样也会降低吞吐量。
+
+**无界队列/无限队列**           
+使用无界队列（例如，不具有预定义容量的 LinkedBlockingQueue）将导致在所有 corePoolSize 线程都忙时新任务在队列中等待。这样，创建的线程就不会超过 corePoolSize。（因此，maximumPoolSize的值也就无效了。）当每个任务完全独立于其他任务，即任务执行互不影响时，适合于使用无界队列；例如，在 Web页服务器中。这种排队可用于处理瞬态突发请求，当命令以超过队列所能处理的平均数连续到达时，此策略允许无界线程具有增长的可能性。
+
 
 # ThreadLocal
 *此处是参考这篇文章整理：[http://www.threadlocal.cn/](http://www.threadlocal.cn/)*
@@ -296,7 +359,7 @@ public void set(T value) {
 
 **所以在使用ThreadLocal的地方一定要记得使用`remove()`来清理内存中的数据。**
 
-# Java的4种引用类型（强、软、弱、虚）
+# 补充：Java的4种引用类型（强、软、弱、虚）
 Java中设计了4种引用类型（强、软、弱、虚引用），在Java种使用最多最广泛的就是Strong Reference，比如：`String a = "123"`，就属于Strong Reference。
 Strong Reference为JVM内部实现，其他三种引用类型全部继承自Reference类，如下所示：    
 ![](http://sunyanping.gitee.io/it-keep/ASSET/Java中的reference类结构.jpg)
@@ -605,4 +668,251 @@ public boolean tryLock(long timeout, TimeUnit unit);
 //可中断锁,调用线程 interrupt 方法,则锁方法抛出 InterruptedException  中断锁
 public void lockInterruptibly();
 
+```
+
+# Future、FutureTask、Callable、ComplatableFuture
+
+## Future
+Future 声明了对具体的 Runnable 或者 Callable 任务执行进行取消、查询、结果获取等方法。必要时可以通过 get 方法获取执行结果，该方法会阻塞直到任务返回结果。
+
+```
+public interface Future<V> {
+    boolean cancel(boolean mayInterruptIfRunning);
+    boolean isCancelled();
+    boolean isDone();
+    V get() throws InterruptedException, ExecutionException;
+    V get(long timeout, TimeUnit unit)
+        throws InterruptedException, ExecutionException, TimeoutException;
+}
+```
+
+Future 提供了三种功能：     
+- **取消任务**：参数表示是否允许中途取消（中断）    
+- **判断状态**：是否已取消、是否已完成      
+- **获取结果**：两种方式，指不指定时间      
+因为 Future 只是一个接口，所以无法直接用来创建对象，因此有了 FutureTask。
+
+## FutureTask
+![FutureTask的继承关系](http://sunyanping.gitee.io/it-keep/ASSET/FutureTask的继承关系.png)
+
+可以看出 RunnableFuture 继承了 Runnable 接口和 Future 接口，而 FutureTask 实现了 RunnableFuture 接口。**所以它既可以作为 Runnable 被线程执行，又可以作为 Future 得到 Callable 的返回值**。
+
+ FutureTask 内部有这几种状态：
+ ```
+ private volatile int state;
+private static final int NEW          = 0;
+private static final int COMPLETING   = 1;
+private static final int NORMAL       = 2;
+private static final int EXCEPTIONAL  = 3;
+private static final int CANCELLED    = 4;
+private static final int INTERRUPTING = 5;
+private static final int INTERRUPTED  = 6;
+ ```
+
+当创建一个 FutureTask 对象时，初始状态是 NEW，在运行过程中，运行状态仅在方法set，setException 和 cancel 中转换为终端状态。有四种状态转换过程：
+
+1. NEW -> COMPLETING -> NORMAL：正常执行并返回结果（run 执行成功再设置状态为 COMPLETING）
+2. NEW -> COMPLETING -> EXCEPTIONAL：执行过程中出现异常（setException 先设置状态为 COMPLETING）
+3. NEW -> CANCELLED：执行前被取消
+4. NEW -> INTERRUPTING -> INTERRUPTED：执行时被中断（cancel 参数为 true 才可能出现这个状态）
+
+事实上，FutureTask 是 Future 接口的一个唯一实现类。
+
+## Callable
+Callable提供了一个具有返回值的创建任务的方法，是对Runnable缺点的一个补充。
+```
+@FunctionalInterface
+public interface Callable<V> {
+    V call() throws Exception;
+}
+```
+这是一个泛型接口，返回的类型就是传进来的 V 类型。一般是结合 ExecutorService 来使用。ExecutorService 声明了几种 submit 方法，其中有一个就是传入 Callable。
+
+## ComplatableFuture
+ComplatableFutures 是Java8中新增的一个用于异步编程的API。也是对Future 的一个扩展。
+
+**Future的局限性**          
+1. 不能手动完成
+2. Future 的结果在非阻塞的情况下，不能执行更进一步的操作。Future 不会通知你它已经完成了，它提供了一个阻塞的 get() 方法通知你结果。你无法给 Future 植入一个回调函数，当 Future 结果可用的时候，用该回调函数自动的调用 Future 的结果。
+3. 多个 Future 不能串联在一起组成链式调用 有时候你需要执行一个长时间运行的计算任务，并且当计算任务完成的时候，你需要把它的计算结果发送给另外一个长时间运行的计算任务等等。你会发现你无法使用 Future 创建这样的一个工作流。
+4. 不能组合多个 Future 的结果 假设你有10个不同的Future，你想并行的运行，然后在它们运行未完成后运行一些函数。你会发现你也无法使用 Future 这样做。
+5. 没有异常处理 Future API 没有任务的异常处理结构
+
+
+CompletableFuture 实现了 Future 和 CompletionStage 接口，并且提供了许多关于创建，链式调用和组合多个 Future 的便利方法集，而且有广泛的异常处理支持。
+
+以下展示ComplatableFuture简单的使用示例：
+
+示例一
+```
+ public static void main(String[] args) {
+    // 异步执行完不需要有返回值，可以使用runAsync()
+    // 异步执行完需要有返回值，可以使用supplyAsync()
+    try {
+//            CompletableFuture<String> completableFuture = new CompletableFuture<>();
+//            completableFuture.complete("Future's Result");
+//            String s = completableFuture.get();
+//            System.out.println(s);
+
+        CompletableFuture<Void> runAsync = CompletableFuture.runAsync(() -> {
+            try {
+                TimeUnit.SECONDS.sleep(10);
+
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            System.out.println("this is not the main thread");
+        });
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+
+
+
+
+    try {
+        CompletableFuture<String> completableFuture = CompletableFuture.supplyAsync(() -> {
+            try {
+                TimeUnit.SECONDS.sleep(10);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            return "Hello";
+        });
+        String s = completableFuture.get();
+        System.out.println(s);
+
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+}
+```
+
+示例二
+```
+public static void main(String[] args) throws ExecutionException, InterruptedException {
+    // 异步任务执行完之后，需要执行下一步任务时可以使用thenApply() thenApplyAsync(),相当于回调函数，可以写成链式
+    // 一般在回调完成之后需要返回值的话，就是用上述函数，
+    // 回调完不需要返回值的话，可以使用thenAccept() thenRun()
+
+    Executor executor = Executors.newFixedThreadPool(2);
+    CompletableFuture<String> hello_runAsync = CompletableFuture.runAsync(() -> {
+        try {
+            sleep(2000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        System.out.println(Thread.currentThread().getName() + ": Hello runAsync");
+    }, executor).thenApplyAsync((e) -> {
+        System.out.println(Thread.currentThread().getName() + ": Hello thenApplyAsync");
+        return "";
+    }, executor).thenApply((e) -> {
+        try {
+            Thread.sleep(3000);
+        } catch (InterruptedException ex) {
+            ex.printStackTrace();
+        }
+        System.out.println(Thread.currentThread().getName() + ": Hello thenApply");
+        return "";
+    });
+
+    hello_runAsync.get();
+
+    System.out.println(Thread.currentThread().getName() + ": Hello Hello");
+}
+```
+
+示例三：
+```
+public static void main(String[] args) throws ExecutionException, InterruptedException {
+    // 对于这种链的调用，如果出现异常则会直接抛出。API中提供了解决出现异常时的处理方案
+    // 1、exceptionally() 当抛出异常时会进行处理
+    // 2、handle() 是否出现异常都会处理
+
+    CompletableFuture<String> future = CompletableFuture.supplyAsync(() -> {
+        // Code which might throw an exception
+        String a = null;
+//            if (a.equals(1)) {}
+        return "Some result";
+    }).thenApply(result -> {
+        return "processed result";
+    }).thenApply(result -> {
+        return "result after further processing";
+    }).thenApply(result -> {
+        // do something with the final result
+        return "something";
+    }).handle((res, ex) -> {
+        if (ex != null) {
+            return "E";
+        }
+        return res;
+    });
+
+    System.out.println(future.get());
+}
+```
+
+示例四：Compose
+```
+public static void main(String[] args) throws ExecutionException, InterruptedException {
+    // 使用thenCompose() 组合两个独立的future
+    // 使用thenCompose() 组合得到的就是异步最后直接的结果，要是使用thenApply() 得到的并不是 需要两步获取 才能得到
+    // 这是使用于一个future依赖于另一个future完成之后来组合
+
+    CompletableFuture<String> completableFuture2 = createHello().thenCompose(CompletableFutureComposeDemo::createWorld);
+
+    String s = completableFuture2.get();
+    System.out.println(s);
+
+
+    CompletableFuture<CompletableFuture<String>> future = createHello().thenApply(CompletableFutureComposeDemo::createWorld);
+    CompletableFuture<String> completableFuture = future.get();
+    String s1 = completableFuture.get();
+    System.out.println(s1);
+}
+
+
+static CompletableFuture<String> createHello() {
+    try {
+        Thread.sleep(2000);
+    } catch (InterruptedException e) {
+        e.printStackTrace();
+    }
+    System.out.println("1");
+    return CompletableFuture.supplyAsync(() -> "Hello");
+}
+
+static CompletableFuture<String> createWorld(String s) {
+    System.out.println(2);
+    return CompletableFuture.supplyAsync(() -> s + " World");
+}
+```
+
+示例五：Combine
+```
+public static void main(String[] args) throws ExecutionException, InterruptedException {
+
+    CompletableFuture<String> future1 = CompletableFuture.supplyAsync(() -> {
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        System.out.println(1);
+        return "Hello";
+    });
+
+    CompletableFuture<String> future2 = CompletableFuture.supplyAsync(() -> {
+        System.out.println(2);
+        return "World";
+    });
+
+    CompletableFuture<String> completableFuture = future1.thenCombine(future2, (a, b) -> {
+        System.out.println(a + 3 + b);
+        return a + b;
+    });
+
+    System.out.println(completableFuture.get());
+
+}
 ```
