@@ -1,6 +1,7 @@
 <!-- TOC -->
 
 - [Java的三大特性封装、继承、多态](#java的三大特性封装继承多态)
+- [Java中的访问权限](#java中的访问权限)
 - [重载（overload）和重写(Override)](#重载overload和重写override)
 - [super和this的区别](#super和this的区别)
 - [try...catch...finally](#trycatchfinally)
@@ -43,6 +44,14 @@
 多态指的是对象的多种形态。多态有两种：引用多态和方法多态。继承是多态的实现基础。
 **引用多态**：父类的引用可以指向本类的对象；父类的引用可以指向子类的对象。  
 **方法多态**：创建父类对象时，调用的方法为父类方法；创建子类对象时，调用的方法是子类重写的方法或继承自父类的方法；
+
+# Java中的访问权限
+||同类|同包类|不同包子类|不同包非子类|
+|---|:---:|:---:|:---:|:---:|
+|public|yes|yes|yes|yes|
+|protected|yes|yes|yes|no|
+|(default)不写|yes|yes|no|no|
+|private|yse|no|no|no|
 
 # 重载（overload）和重写(Override)
 - **重载表现在同类中：** 方法名称相同，签名不同。
