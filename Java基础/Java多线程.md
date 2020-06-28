@@ -86,6 +86,7 @@ ExecutorService executors = Executors.newFixedThreadPool(2);
 **这里也总结一下几种创建任务的方法**：      
 - 继承Thread，如上展示的方式；
 - 实现Runnable，代码如下；
+
 ```
 static class Thread1 implements Runnable {
     @Override
@@ -101,6 +102,7 @@ public static void main(String[] args) {
 
 - 实现Callable      
 因为使用Thread和Runnable创建的任务，都是使用了`run()`方法，`run()`方法是一个没有返回值的方法，所以创建的任务不能方便的获取到结果。所以为了补足这个缺点，就增加了`Callable`类，可以使用`call()`方法创建一个有返回值的任务。
+
 ```
 @FunctionalInterface
 public interface Callable<V> {
@@ -109,6 +111,7 @@ public interface Callable<V> {
 ```
 
 示例：      
+   
 ```
 public class MyCallable implements Callable<Integer> {
     @Override
